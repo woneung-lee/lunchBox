@@ -10,6 +10,7 @@ export default function Groups() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
@@ -18,25 +19,39 @@ export default function Groups() {
 
   const loadGroups = async () => {
     setLoading(true);
-    const user = getCurrentUser();
-    const result = await getUserGroups(user.uid);
+    setError(null);
     
-    if (result.success) {
-      setGroups(result.groups);
+    try {
+      const user = getCurrentUser();
+      const result = await getUserGroups(user.uid);
+      
+      if (result.success) {
+        setGroups(result.groups || []);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      console.error('그룹 조회 오류:', err);
+      setError('그룹을 불러오는 중 오류가 발생했습니다.');
     }
     
     setLoading(false);
   };
 
   const handleCreateGroup = async (groupData) => {
-    const user = getCurrentUser();
-    const result = await createGroup(user.uid, groupData);
-    
-    if (result.success) {
-      setIsFormOpen(false);
-      await loadGroups();
-    } else {
-      alert(result.error || '그룹 생성에 실패했습니다.');
+    try {
+      const user = getCurrentUser();
+      const result = await createGroup(user.uid, groupData);
+      
+      if (result.success) {
+        setIsFormOpen(false);
+        await loadGroups();
+      } else {
+        alert(result.error || '그룹 생성에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('그룹 생성 오류:', err);
+      alert('그룹 생성 중 오류가 발생했습니다.');
     }
   };
 
@@ -45,12 +60,17 @@ export default function Groups() {
       return;
     }
 
-    const result = await deleteGroup(group.id);
-    
-    if (result.success) {
-      await loadGroups();
-    } else {
-      alert(result.error || '그룹 삭제에 실패했습니다.');
+    try {
+      const result = await deleteGroup(group.id);
+      
+      if (result.success) {
+        await loadGroups();
+      } else {
+        alert(result.error || '그룹 삭제에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('그룹 삭제 오류:', err);
+      alert('그룹 삭제 중 오류가 발생했습니다.');
     }
   };
 
@@ -72,11 +92,20 @@ export default function Groups() {
           </button>
         </div>
 
+        {error && (
+          <div className="error-message">
+            <p>⚠️ {error}</p>
+            <button onClick={loadGroups} className="btn-retry">
+              다시 시도
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading">로딩 중...</div>
         ) : (
           <div className="groups-list">
-            {groups.length === 0 ? (
+            {!groups || groups.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">👥</div>
                 <h3>그룹이 없습니다</h3>
