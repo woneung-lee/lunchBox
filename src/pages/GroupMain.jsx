@@ -15,7 +15,6 @@ export default function GroupMain() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [isMealModalOpen, setIsMealModalOpen] = useState(false);
 
   useEffect(() => {
@@ -29,30 +28,27 @@ export default function GroupMain() {
     setError(null);
 
     try {
-      // 식사 기록 조회
       const dateKey = formatDateKey(selectedDate);
       const mealsResult = await getDateMeals(group.id, dateKey);
       
       if (mealsResult.success) {
-        setMeals(mealsResult.meals || []); // 안전하게 처리
+        setMeals(mealsResult.meals || []);
       } else {
         console.error('식사 기록 조회 실패:', mealsResult.error);
         setMeals([]);
       }
 
-      // 음식점 목록 조회
       const restaurantsResult = await getGroupRestaurants(group.id);
       if (restaurantsResult.success) {
-        setRestaurants(restaurantsResult.restaurants || []); // 안전하게 처리
+        setRestaurants(restaurantsResult.restaurants || []);
       } else {
         console.error('음식점 조회 실패:', restaurantsResult.error);
         setRestaurants([]);
       }
 
-      // 모임원 목록 조회
       const membersResult = await getGroupMembers(group.id);
       if (membersResult.success) {
-        setMembers(membersResult.members || []); // 안전하게 처리
+        setMembers(membersResult.members || []);
       } else {
         console.error('모임원 조회 실패:', membersResult.error);
         setMembers([]);
@@ -110,8 +106,7 @@ export default function GroupMain() {
     setIsMealModalOpen(true);
   };
 
-  const handleSaveMeal = async (mealData) => {
-    // MealModal에서 처리
+  const handleSaveMeal = async () => {
     setIsMealModalOpen(false);
     await loadData();
   };
@@ -246,7 +241,6 @@ export default function GroupMain() {
       {/* 추가 버튼 */}
       <button className="btn-add-meal" onClick={handleAddMeal}>
         <Plus size={24} />
-        식사 기록 추가
       </button>
 
       {/* 식사 기록 모달 */}
