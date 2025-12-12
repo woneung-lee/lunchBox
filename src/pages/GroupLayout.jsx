@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useParams, useNavigate } from 'react-router-dom';
-import { Home, Store, Users, Settings, ChevronLeft } from 'lucide-react';
+import { Calendar, Store, Users, BarChart3, Shuffle, ChevronLeft } from 'lucide-react';
 import { getGroup } from '../utils/groups';
 import './GroupLayout.css';
 
@@ -9,7 +9,7 @@ export default function GroupLayout() {
   const navigate = useNavigate();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('main');
+  const [activeTab, setActiveTab] = useState('calendar');
 
   useEffect(() => {
     if (groupId) {
@@ -71,14 +71,14 @@ export default function GroupLayout() {
         <Outlet context={{ group, reloadGroup: loadGroup }} />
       </div>
 
-      {/* 하단 네비게이션 */}
+      {/* 하단 네비게이션 - 5개 탭 */}
       <nav className="bottom-nav">
         <button
-          className={`nav-item ${activeTab === 'main' ? 'active' : ''}`}
-          onClick={() => handleTabClick('main', '')}
+          className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`}
+          onClick={() => handleTabClick('calendar', '')}
         >
-          <Home size={24} />
-          <span>메인</span>
+          <Calendar size={24} />
+          <span>달력</span>
         </button>
 
         <button
@@ -98,11 +98,19 @@ export default function GroupLayout() {
         </button>
 
         <button
-          className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => handleTabClick('settings', '/settings')}
+          className={`nav-item ${activeTab === 'statistics' ? 'active' : ''}`}
+          onClick={() => handleTabClick('statistics', '/statistics')}
         >
-          <Settings size={24} />
-          <span>설정</span>
+          <BarChart3 size={24} />
+          <span>통계</span>
+        </button>
+
+        <button
+          className={`nav-item ${activeTab === 'roulette' ? 'active' : ''}`}
+          onClick={() => handleTabClick('roulette', '/roulette')}
+        >
+          <Shuffle size={24} />
+          <span>룰렛</span>
         </button>
       </nav>
     </div>
