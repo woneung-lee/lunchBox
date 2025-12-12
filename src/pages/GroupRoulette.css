@@ -1,0 +1,223 @@
+.group-roulette {
+  padding: var(--spacing-lg);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.roulette-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* 룰렛 결과 */
+.roulette-result {
+  padding: var(--spacing-xxl);
+  background: white;
+  border: 3px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.roulette-result.spinning {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(107, 203, 119, 0.3);
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.result-icon {
+  font-size: 80px;
+  margin-bottom: var(--spacing-lg);
+  animation: bounce 1s ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.roulette-result.spinning .result-icon {
+  animation: spin 0.3s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.restaurant-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.restaurant-category {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(107, 203, 119, 0.1);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.restaurant-address {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-sm);
+}
+
+.result-text {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+/* 룰렛 버튼 */
+.btn-spin {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #5ab36a);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px rgba(107, 203, 119, 0.3);
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-xl);
+}
+
+.btn-spin:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(107, 203, 119, 0.4);
+}
+
+.btn-spin:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-spin.spinning {
+  background: linear-gradient(135deg, #FFC107, #FF9800);
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+/* 음식점 정보 */
+.restaurants-info {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: left;
+}
+
+.restaurants-info h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.restaurants-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.restaurant-chip {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.restaurant-chip:hover {
+  background: rgba(107, 203, 119, 0.1);
+  border-color: var(--accent);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.empty-state small {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 12px;
+}
+
+/* 로딩 */
+.loading {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: var(--text-secondary);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .group-roulette {
+    padding: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .restaurant-name {
+    font-size: 24px;
+  }
+
+  .restaurant-category {
+    font-size: 16px;
+  }
+
+  .btn-spin {
+    font-size: 18px;
+  }
+}
