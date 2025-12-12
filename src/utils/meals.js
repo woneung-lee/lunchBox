@@ -13,7 +13,7 @@ import {
 import { db } from '../config/firebase';
 
 /**
- * 식사 기록 추가
+ * 식사 기록 추가 (재설계 버전)
  */
 export const createMeal = async (groupId, dateKey, userId, mealData) => {
   try {
@@ -21,8 +21,8 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       restaurantId, 
       restaurantName, 
       restaurantCategory,
-      totalAmount, 
-      participants, 
+      items,
+      participants,
       memo = '' 
     } = mealData;
 
@@ -30,16 +30,17 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       throw new Error('음식점을 선택해주세요.');
     }
 
-    if (!totalAmount || totalAmount <= 0) {
-      throw new Error('총 금액을 입력해주세요.');
+    if (!items || items.length === 0) {
+      throw new Error('메뉴를 추가해주세요.');
     }
 
     if (!participants || participants.length === 0) {
       throw new Error('참여자를 선택해주세요.');
     }
 
-    // N빵 계산
-    const splitAmount = Math.round(totalAmount / participants.length);
+    // 정산 계산
+    const settlement = calculateSettlement(items, participants);
+    const totalAmount = calculateTotalAmount(items);
 
     // 새 식사 기록 ID 생성
     const mealRef = doc(collection(db, 'meals'));
@@ -52,9 +53,10 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       restaurantId,
       restaurantName,
       restaurantCategory,
-      totalAmount: Number(totalAmount),
+      items,
       participants,
-      splitAmount,
+      settlement,
+      totalAmount,
       memo: memo.trim(),
       createdBy: userId,
       createdAt: new Date().toISOString(),
@@ -119,17 +121,18 @@ export const getMeal = async (mealId) => {
  */
 export const updateMeal = async (mealId, updates) => {
   try {
-    const { totalAmount, participants, memo } = updates;
+    const { items, participants, memo } = updates;
 
     const updateData = {
       updatedAt: new Date().toISOString()
     };
 
-    if (totalAmount !== undefined) {
-      if (totalAmount <= 0) {
-        throw new Error('총 금액을 입력해주세요.');
+    if (items !== undefined) {
+      if (!items || items.length === 0) {
+        throw new Error('메뉴를 추가해주세요.');
       }
-      updateData.totalAmount = Number(totalAmount);
+      updateData.items = items;
+      updateData.totalAmount = calculateTotalAmount(items);
     }
 
     if (participants !== undefined) {
@@ -137,10 +140,14 @@ export const updateMeal = async (mealId, updates) => {
         throw new Error('참여자를 선택해주세요.');
       }
       updateData.participants = participants;
-      
-      // N빵 재계산
-      const amount = totalAmount !== undefined ? totalAmount : (await getMeal(mealId)).meal.totalAmount;
-      updateData.splitAmount = Math.round(amount / participants.length);
+    }
+
+    // items 또는 participants가 변경되면 정산 재계산
+    if (items !== undefined || participants !== undefined) {
+      const currentMeal = await getMeal(mealId);
+      const finalItems = items || currentMeal.meal.items;
+      const finalParticipants = participants || currentMeal.meal.participants;
+      updateData.settlement = calculateSettlement(finalItems, finalParticipants);
     }
 
     if (memo !== undefined) {
@@ -170,6 +177,96 @@ export const deleteMeal = async (mealId) => {
 };
 
 /**
+ * 정산 계산 (핵심 로직!)
+ */
+export const calculateSettlement = (items, participants) => {
+  const settlement = {};
+  
+  // 모든 참여자 초기화
+  participants.forEach(participant => {
+    settlement[participant.id] = 0;
+  });
+
+  // 각 메뉴 아이템별로 계산
+  items.forEach(item => {
+    if (item.type === 'individual') {
+      // 개인 메뉴: 해당 사람이 전액 부담
+      if (settlement[item.consumerId] !== undefined) {
+        settlement[item.consumerId] += item.price;
+      }
+    } else if (item.type === 'shared') {
+      // 공용 메뉴: N빵
+      const splitAmount = Math.round(item.price / item.consumerIds.length);
+      item.consumerIds.forEach(consumerId => {
+        if (settlement[consumerId] !== undefined) {
+          settlement[consumerId] += splitAmount;
+        }
+      });
+    }
+  });
+
+  return settlement;
+};
+
+/**
+ * 총 금액 계산
+ */
+export const calculateTotalAmount = (items) => {
+  return items.reduce((total, item) => total + item.price, 0);
+};
+
+/**
+ * 날짜별 총 금액 계산
+ */
+export const calculateDateTotal = (meals) => {
+  return meals.reduce((total, meal) => total + (meal.totalAmount || 0), 0);
+};
+
+/**
+ * 사용자별 정산 금액 계산 (여러 식사 기록 합산)
+ */
+export const calculateUserTotal = (meals, userId) => {
+  let total = 0;
+  
+  meals.forEach(meal => {
+    if (meal.settlement && meal.settlement[userId]) {
+      total += meal.settlement[userId];
+    }
+  });
+  
+  return total;
+};
+
+/**
+ * 그룹 전체 정산 내역 (여러 식사 기록 합산)
+ */
+export const calculateGroupSettlement = (meals, participants) => {
+  const settlement = {};
+  
+  // 모든 참여자 초기화
+  participants.forEach(participant => {
+    settlement[participant.id] = {
+      name: participant.name,
+      type: participant.type,
+      amount: 0
+    };
+  });
+
+  // 각 식사 기록의 정산 합산
+  meals.forEach(meal => {
+    if (meal.settlement) {
+      Object.entries(meal.settlement).forEach(([participantId, amount]) => {
+        if (settlement[participantId]) {
+          settlement[participantId].amount += amount;
+        }
+      });
+    }
+  });
+
+  return settlement;
+};
+
+/**
  * 금액 포맷팅
  */
 export const formatAmount = (amount) => {
@@ -177,36 +274,17 @@ export const formatAmount = (amount) => {
 };
 
 /**
- * 날짜별 총 금액 계산
+ * 참여자 타입별 아이콘
  */
-export const calculateDateTotal = (meals) => {
-  return meals.reduce((total, meal) => total + meal.totalAmount, 0);
-};
-
-/**
- * 사용자별 정산 금액 계산
- */
-export const calculateUserSettlement = (meals, userId) => {
-  let totalAmount = 0;
-  
-  meals.forEach(meal => {
-    if (meal.participants.includes(userId)) {
-      totalAmount += meal.splitAmount;
-    }
-  });
-  
-  return totalAmount;
-};
-
-/**
- * 그룹 전체 정산 내역 계산
- */
-export const calculateGroupSettlement = (meals, memberIds) => {
-  const settlement = {};
-  
-  memberIds.forEach(memberId => {
-    settlement[memberId] = calculateUserSettlement(meals, memberId);
-  });
-  
-  return settlement;
+export const getParticipantIcon = (type) => {
+  switch (type) {
+    case 'member':
+      return '👤';
+    case 'regular':
+      return '👥';
+    case 'guest':
+      return '🎫';
+    default:
+      return '👤';
+  }
 };
