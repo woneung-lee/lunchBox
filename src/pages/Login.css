@@ -1,0 +1,103 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, #FFE5E5 0%, #FFF9E5 100%);
+}
+
+.login-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.login-header .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #FFE5E5, #FFF4E5);
+  border-radius: 50%;
+  margin-bottom: var(--spacing-md);
+  animation: bounce 2s infinite;
+}
+
+.login-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.error-banner {
+  padding: var(--spacing-md);
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  color: var(--primary);
+  font-size: 14px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.login-footer {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-footer a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.login-footer .coming-soon {
+  font-size: 12px;
+  padding: var(--spacing-sm);
+  background: linear-gradient(135deg, #FFF9E5, #FFE5E5);
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-md);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .login-container {
+    padding: var(--spacing-md);
+  }
+
+  .login-card {
+    padding: var(--spacing-lg);
+  }
+
+  .login-header h1 {
+    font-size: 24px;
+  }
+}
