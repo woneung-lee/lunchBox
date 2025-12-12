@@ -1,0 +1,237 @@
+.date-detail-container {
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+.date-detail-header {
+  background: white;
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.date-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.date-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius-md);
+}
+
+.date-info h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.group-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.date-detail-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* 로딩 상태 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 60px;
+  margin-bottom: var(--spacing-md);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 식사 기록 섹션 */
+.meals-section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 2px 8px var(--shadow);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-meals {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: var(--spacing-lg);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty-meals h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-meals p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 식사 추가 버튼 */
+.btn-add-meal {
+  width: 100%;
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  transition: all 0.2s ease;
+}
+
+.btn-add-meal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+}
+
+.btn-add-meal:active {
+  transform: translateY(0);
+}
+
+/* 안내 메시지 */
+.info-notice {
+  animation: fadeIn 0.5s ease;
+}
+
+.notice-card {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--shadow);
+  border-left: 4px solid var(--primary);
+}
+
+.notice-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.notice-card > p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.notice-card ul {
+  list-style: none;
+  padding-left: var(--spacing-md);
+}
+
+.notice-card li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  padding-left: var(--spacing-md);
+  position: relative;
+}
+
+.notice-card li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .date-detail-header {
+    padding: var(--spacing-md);
+  }
+
+  .date-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .date-info h1 {
+    font-size: 18px;
+  }
+
+  .date-detail-content {
+    padding: var(--spacing-md);
+  }
+
+  .meals-section {
+    padding: var(--spacing-md);
+  }
+
+  .empty-icon {
+    font-size: 60px;
+  }
+
+  .empty-meals h3 {
+    font-size: 18px;
+  }
+
+  .btn-add-meal {
+    padding: var(--spacing-md);
+  }
+}
