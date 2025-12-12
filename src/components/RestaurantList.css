@@ -1,0 +1,152 @@
+.empty-restaurants {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 60px;
+  margin-bottom: var(--spacing-md);
+  animation: bounce 2s infinite;
+}
+
+.empty-restaurants p {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-restaurants small {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 음식점 목록 */
+.restaurant-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.restaurant-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.restaurant-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.restaurant-card.selectable {
+  cursor: pointer;
+}
+
+.restaurant-card.selectable:hover {
+  transform: translateX(4px);
+  background: var(--bg-main);
+}
+
+.restaurant-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.restaurant-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.restaurant-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.restaurant-category {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 2px 8px;
+  background: var(--bg-main);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+/* 액션 버튼들 */
+.restaurant-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.restaurant-actions button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.restaurant-actions button:hover {
+  transform: scale(1.1);
+}
+
+.btn-favorite {
+  color: var(--text-secondary);
+}
+
+.btn-favorite:hover {
+  background: rgba(255, 217, 61, 0.2);
+  color: var(--secondary);
+}
+
+.btn-favorite.active {
+  color: var(--secondary);
+}
+
+.btn-edit:hover {
+  background: rgba(107, 203, 119, 0.2);
+  color: var(--accent);
+}
+
+.btn-delete:hover {
+  background: rgba(255, 107, 107, 0.2);
+  color: var(--primary);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .restaurant-icon {
+    font-size: 32px;
+  }
+
+  .restaurant-name {
+    font-size: 15px;
+  }
+
+  .restaurant-category {
+    font-size: 12px;
+  }
+
+  .restaurant-actions button {
+    width: 32px;
+    height: 32px;
+  }
+}
