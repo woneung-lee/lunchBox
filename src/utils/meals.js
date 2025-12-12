@@ -10,6 +10,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
+export const formatAmount = (amount) => {
+  if (!amount && amount !== 0) return '0';
+  return Number(amount).toLocaleString();
+};
+
 export const createMeal = async (groupId, userId, dateKey, mealData) => {
   try {
     const { restaurantId, restaurantName, restaurantCategory, items, memo = '' } = mealData;
