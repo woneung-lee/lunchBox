@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../utils/auth';
 import { getGroup } from '../utils/groups';
-import { ArrowLeft, Settings, Calendar, Users } from 'lucide-react';
+import { ArrowLeft, Settings, Users, Plus } from 'lucide-react';
+import Calendar from '../components/Calendar';
+import { formatDateKey } from '../utils/calendar';
 import './GroupDetail.css';
 
 export default function GroupDetail() {
@@ -11,6 +13,8 @@ export default function GroupDetail() {
   const [user, setUser] = useState(null);
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [mealRecords, setMealRecords] = useState({});
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -32,6 +36,13 @@ export default function GroupDetail() {
       navigate('/groups');
     }
     setLoading(false);
+  };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    const dateKey = formatDateKey(date);
+    // 날짜별 상세 페이지로 이동 (4단계에서 구현)
+    navigate(`/group/${groupId}/date/${dateKey}`);
   };
 
   if (loading || !group || !user) {
@@ -73,29 +84,38 @@ export default function GroupDetail() {
 
       {/* 메인 콘텐츠 */}
       <div className="group-detail-content">
-        <div className="coming-soon-section">
-          <div className="coming-soon-icon">
-            <Calendar size={80} color="var(--primary)" />
-          </div>
-          <h2>🗓️ 캘린더 준비 중</h2>
-          <p>3단계에서 캘린더와 식사 기록 기능이 추가될 예정입니다!</p>
-          
-          <div className="feature-preview">
-            <h3>곧 만나볼 기능들</h3>
-            <ul>
-              <li>📅 캘린더에서 날짜별 식사 기록</li>
-              <li>🍱 음식점 등록 및 관리</li>
-              <li>💰 식대 자동 계산 및 N빵</li>
-              <li>📊 통계 및 정산 내역</li>
-              <li>🎲 음식점 룰렛</li>
-            </ul>
+        {/* 캘린더 */}
+        <div className="calendar-section">
+          <Calendar
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+            mealRecords={mealRecords}
+          />
+        </div>
+
+        {/* 안내 메시지 */}
+        <div className="info-section">
+          <div className="info-card">
+            <div className="info-icon">📅</div>
+            <h3>날짜를 선택하세요</h3>
+            <p>캘린더에서 날짜를 클릭하면 해당 날짜의 식사 기록을 볼 수 있어요</p>
           </div>
 
+          <div className="info-card">
+            <div className="info-icon">🍱</div>
+            <h3>4단계 준비 중</h3>
+            <p>음식점 등록 및 식사 기록 기능이 추가될 예정입니다!</p>
+          </div>
+        </div>
+
+        {/* 빠른 액션 */}
+        <div className="quick-actions">
           <button 
-            className="btn-back-to-list"
-            onClick={() => navigate('/groups')}
+            className="action-card"
+            onClick={() => alert('4단계에서 구현됩니다!')}
           >
-            그룹 목록으로 돌아가기
+            <Plus size={24} />
+            <span>식사 기록 추가</span>
           </button>
         </div>
       </div>
