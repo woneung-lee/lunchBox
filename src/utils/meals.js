@@ -13,7 +13,7 @@ import {
 import { db } from '../config/firebase';
 
 /**
- * 식사 기록 추가 (재설계 버전)
+ * 식사 기록 추가 (간단한 버전 - N빵)
  */
 export const createMeal = async (groupId, dateKey, userId, mealData) => {
   try {
@@ -21,8 +21,8 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       restaurantId, 
       restaurantName, 
       restaurantCategory,
-      items,
-      participants,
+      totalAmount,
+      participants, // [{ id, name, type }]
       memo = '' 
     } = mealData;
 
@@ -30,17 +30,16 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       throw new Error('음식점을 선택해주세요.');
     }
 
-    if (!items || items.length === 0) {
-      throw new Error('메뉴를 추가해주세요.');
+    if (!totalAmount || totalAmount <= 0) {
+      throw new Error('총 금액을 입력해주세요.');
     }
 
     if (!participants || participants.length === 0) {
       throw new Error('참여자를 선택해주세요.');
     }
 
-    // 정산 계산
-    const settlement = calculateSettlement(items, participants);
-    const totalAmount = calculateTotalAmount(items);
+    // N빵 계산
+    const splitAmount = Math.round(totalAmount / participants.length);
 
     // 새 식사 기록 ID 생성
     const mealRef = doc(collection(db, 'meals'));
@@ -53,10 +52,9 @@ export const createMeal = async (groupId, dateKey, userId, mealData) => {
       restaurantId,
       restaurantName,
       restaurantCategory,
-      items,
-      participants,
-      settlement,
       totalAmount,
+      participants,
+      splitAmount,
       memo: memo.trim(),
       createdBy: userId,
       createdAt: new Date().toISOString(),
@@ -121,18 +119,17 @@ export const getMeal = async (mealId) => {
  */
 export const updateMeal = async (mealId, updates) => {
   try {
-    const { items, participants, memo } = updates;
+    const { totalAmount, participants, memo } = updates;
 
     const updateData = {
       updatedAt: new Date().toISOString()
     };
 
-    if (items !== undefined) {
-      if (!items || items.length === 0) {
-        throw new Error('메뉴를 추가해주세요.');
+    if (totalAmount !== undefined) {
+      if (!totalAmount || totalAmount <= 0) {
+        throw new Error('총 금액을 입력해주세요.');
       }
-      updateData.items = items;
-      updateData.totalAmount = calculateTotalAmount(items);
+      updateData.totalAmount = totalAmount;
     }
 
     if (participants !== undefined) {
@@ -140,14 +137,10 @@ export const updateMeal = async (mealId, updates) => {
         throw new Error('참여자를 선택해주세요.');
       }
       updateData.participants = participants;
-    }
-
-    // items 또는 participants가 변경되면 정산 재계산
-    if (items !== undefined || participants !== undefined) {
-      const currentMeal = await getMeal(mealId);
-      const finalItems = items || currentMeal.meal.items;
-      const finalParticipants = participants || currentMeal.meal.participants;
-      updateData.settlement = calculateSettlement(finalItems, finalParticipants);
+      
+      // N빵 재계산
+      const amount = totalAmount || (await getMeal(mealId)).meal.totalAmount;
+      updateData.splitAmount = Math.round(amount / participants.length);
     }
 
     if (memo !== undefined) {
@@ -177,42 +170,10 @@ export const deleteMeal = async (mealId) => {
 };
 
 /**
- * 정산 계산 (핵심 로직!)
+ * 금액 포맷팅
  */
-export const calculateSettlement = (items, participants) => {
-  const settlement = {};
-  
-  // 모든 참여자 초기화
-  participants.forEach(participant => {
-    settlement[participant.id] = 0;
-  });
-
-  // 각 메뉴 아이템별로 계산
-  items.forEach(item => {
-    if (item.type === 'individual') {
-      // 개인 메뉴: 해당 사람이 전액 부담
-      if (settlement[item.consumerId] !== undefined) {
-        settlement[item.consumerId] += item.price;
-      }
-    } else if (item.type === 'shared') {
-      // 공용 메뉴: N빵
-      const splitAmount = Math.round(item.price / item.consumerIds.length);
-      item.consumerIds.forEach(consumerId => {
-        if (settlement[consumerId] !== undefined) {
-          settlement[consumerId] += splitAmount;
-        }
-      });
-    }
-  });
-
-  return settlement;
-};
-
-/**
- * 총 금액 계산
- */
-export const calculateTotalAmount = (items) => {
-  return items.reduce((total, item) => total + item.price, 0);
+export const formatAmount = (amount) => {
+  return new Intl.NumberFormat('ko-KR').format(amount);
 };
 
 /**
@@ -223,14 +184,15 @@ export const calculateDateTotal = (meals) => {
 };
 
 /**
- * 사용자별 정산 금액 계산 (여러 식사 기록 합산)
+ * 사용자별 정산 금액 계산
  */
-export const calculateUserTotal = (meals, userId) => {
+export const calculateUserSettlement = (meals, userId) => {
   let total = 0;
   
   meals.forEach(meal => {
-    if (meal.settlement && meal.settlement[userId]) {
-      total += meal.settlement[userId];
+    const isParticipant = meal.participants?.some(p => p.id === userId);
+    if (isParticipant && meal.splitAmount) {
+      total += meal.splitAmount;
     }
   });
   
@@ -238,26 +200,22 @@ export const calculateUserTotal = (meals, userId) => {
 };
 
 /**
- * 그룹 전체 정산 내역 (여러 식사 기록 합산)
+ * 그룹 전체 정산 내역
  */
-export const calculateGroupSettlement = (meals, participants) => {
+export const calculateGroupSettlement = (meals, memberIds) => {
   const settlement = {};
   
-  // 모든 참여자 초기화
-  participants.forEach(participant => {
-    settlement[participant.id] = {
-      name: participant.name,
-      type: participant.type,
-      amount: 0
-    };
+  // 모든 멤버 초기화
+  memberIds.forEach(memberId => {
+    settlement[memberId] = 0;
   });
 
-  // 각 식사 기록의 정산 합산
+  // 각 식사의 정산 계산
   meals.forEach(meal => {
-    if (meal.settlement) {
-      Object.entries(meal.settlement).forEach(([participantId, amount]) => {
-        if (settlement[participantId]) {
-          settlement[participantId].amount += amount;
+    if (meal.participants && meal.splitAmount) {
+      meal.participants.forEach(participant => {
+        if (settlement[participant.id] !== undefined) {
+          settlement[participant.id] += meal.splitAmount;
         }
       });
     }
@@ -267,21 +225,12 @@ export const calculateGroupSettlement = (meals, participants) => {
 };
 
 /**
- * 금액 포맷팅
- */
-export const formatAmount = (amount) => {
-  return new Intl.NumberFormat('ko-KR').format(amount);
-};
-
-/**
  * 참여자 타입별 아이콘
  */
 export const getParticipantIcon = (type) => {
   switch (type) {
     case 'member':
       return '👤';
-    case 'regular':
-      return '👥';
     case 'guest':
       return '🎫';
     default:
