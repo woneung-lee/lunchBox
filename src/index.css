@@ -75,6 +75,7 @@ button {
   margin: 0;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  white-space: nowrap; /* 🔧 버튼 텍스트 세로 나오는 문제 해결! */
 }
 
 button:disabled {
@@ -310,6 +311,7 @@ img {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-radius: var(--radius-md);
   transition: var(--transition);
+  white-space: nowrap; /* 🔧 텍스트 세로 방지 */
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -333,6 +335,7 @@ img {
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
   transition: var(--transition);
+  white-space: nowrap; /* 🔧 텍스트 세로 방지 */
 }
 
 .btn-secondary:hover {
@@ -414,11 +417,4 @@ img {
   .modal-body {
     padding: var(--spacing-md);
   }
-}
-
-/* ========================================
-   다크모드 지원 (선택사항)
-   ======================================== */
-@media (prefers-color-scheme: dark) {
-  /* 나중에 다크모드 추가 가능 */
 }
