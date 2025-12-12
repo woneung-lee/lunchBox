@@ -1,259 +1,183 @@
-.meal-modal-advanced {
-  max-width: 650px;
+.meal-modal {
+  max-width: 600px;
   max-height: 90vh;
-}
-
-.meal-modal-body {
-  max-height: calc(90vh - 80px);
   overflow-y: auto;
 }
 
-.form-section {
+.required {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.form-group {
   margin-bottom: var(--spacing-lg);
 }
 
-.form-section h3 {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
-}
-
-/* 음식점 선택 */
-.btn-add-restaurant {
-  width: 100%;
-  padding: var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
+.form-group label {
+  display: block;
   font-size: 14px;
   font-weight: 600;
-  color: white;
-  background: linear-gradient(135deg, var(--accent), #5ab36a);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
 }
 
-.btn-add-restaurant:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(107, 203, 119, 0.3);
-}
-
-.restaurant-list-simple {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.restaurant-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+.form-group select,
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: 15px;
   background: white;
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
-  text-align: left;
   transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
-.restaurant-item:hover {
-  border-color: var(--primary);
-  background: var(--bg-main);
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  outline: none;
 }
 
-.restaurant-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
-
-.restaurant-name {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
+/* 선택된 음식점 */
 .selected-restaurant {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 217, 61, 0.1));
+  background: var(--bg-main);
+  border: 2px solid var(--accent);
   border-radius: var(--radius-md);
-  border: 2px solid rgba(255, 107, 107, 0.3);
 }
 
-.selected-icon {
-  font-size: 28px;
+.selected-restaurant svg {
+  color: var(--accent);
   flex-shrink: 0;
 }
 
-.selected-name {
+.selected-restaurant span {
   flex: 1;
-  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .btn-change {
-  padding: 6px 12px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 13px;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--text-secondary);
   background: white;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
   white-space: nowrap;
-  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .btn-change:hover {
-  background: var(--primary);
-  color: white;
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
-/* 음식 타입 선택 */
+/* 타입 선택 */
 .item-type-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
 }
 
 .type-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
   padding: var(--spacing-md);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-secondary);
   background: white;
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
   white-space: nowrap;
+}
+
+.type-btn.active {
+  color: var(--accent);
+  background: rgba(107, 203, 119, 0.1);
+  border-color: var(--accent);
 }
 
 .type-btn:hover {
   border-color: var(--accent);
 }
 
-.type-btn.active {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: white;
-  font-weight: 600;
+/* 음식 추가 폼 */
+.add-item-form {
+  padding: var(--spacing-lg);
+  background: var(--bg-main);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
-/* 음식 입력 행 */
-.item-input-row {
+.form-row {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
 
-.item-name-input,
-.item-amount-input {
-  padding: var(--spacing-md);
-  font-size: 14px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: all 0.2s ease;
-}
-
-.item-name-input:focus,
-.item-amount-input:focus {
-  border-color: var(--accent);
-}
-
-.item-amount-input {
-  text-align: right;
-  font-weight: 600;
-}
-
-/* 모임원 선택 */
-.member-select {
-  width: 100%;
-  padding: var(--spacing-md);
-  font-size: 14px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  background: white;
-  transition: all 0.2s ease;
+/* 참여자 선택 */
+.participants-selector {
   margin-bottom: var(--spacing-md);
 }
 
-.member-select:focus {
-  border-color: var(--accent);
+.participants-selector > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
 }
 
-/* 참여자 그리드 */
 .participants-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: var(--spacing-sm);
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--spacing-xs);
   margin-bottom: var(--spacing-sm);
 }
 
 .participant-btn {
   padding: var(--spacing-sm);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-secondary);
   background: white;
   border: 2px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
-  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.participant-btn.selected {
+  color: white;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 .participant-btn:hover {
   border-color: var(--accent);
-  background: var(--bg-main);
 }
 
-.participant-btn.active {
-  border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(107, 203, 119, 0.15), rgba(107, 203, 119, 0.1));
-  color: var(--accent);
-  font-weight: 600;
-}
-
-/* N빵 미리보기 */
 .split-preview {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: linear-gradient(135deg, rgba(107, 203, 119, 0.1), rgba(107, 203, 119, 0.05));
-  border-radius: var(--radius-md);
-  border-left: 3px solid var(--accent);
+  padding: var(--spacing-sm);
   font-size: 14px;
   font-weight: 600;
   color: var(--accent);
   text-align: center;
-  margin-bottom: var(--spacing-md);
+  background: rgba(107, 203, 119, 0.1);
+  border-radius: var(--radius-sm);
 }
 
-.split-preview small {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  margin-left: 4px;
-}
-
-/* 음식 추가 버튼 */
 .btn-add-item {
   width: 100%;
   display: flex;
@@ -263,154 +187,112 @@
   padding: var(--spacing-md);
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent);
-  background: white;
-  border: 2px dashed var(--accent);
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #5ab36a);
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .btn-add-item:hover {
-  background: rgba(107, 203, 119, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(107, 203, 119, 0.3);
 }
 
-/* 음식 목록 */
+/* 추가된 음식 목록 */
 .items-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-main);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.items-list h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
 }
 
 .item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: white;
-  border: 2px solid var(--border);
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
-}
-
-.item-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(107, 203, 119, 0.1);
-}
-
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: var(--spacing-sm);
 }
 
-.item-type-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--bg-main);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+.item-card:last-of-type {
+  margin-bottom: var(--spacing-md);
 }
 
-.btn-remove-item {
-  padding: 4px;
-  color: var(--text-secondary);
-  background: none;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+.item-info {
+  flex: 1;
 }
 
-.btn-remove-item:hover {
-  color: var(--primary);
-  background: rgba(255, 107, 107, 0.1);
-}
-
-.item-body {
+.item-name-amount {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 4px;
 }
 
-.item-name {
+.item-name-amount .name {
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.item-amount {
-  font-size: 16px;
+.item-name-amount .amount {
+  font-size: 15px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--primary);
+  white-space: nowrap;
 }
 
-.item-footer {
+.item-detail {
   font-size: 13px;
   color: var(--text-secondary);
 }
 
-.item-footer small {
-  font-size: 11px;
+.split-info {
+  margin-left: var(--spacing-xs);
   color: var(--accent);
   font-weight: 600;
 }
 
-/* 총액 */
+.btn-remove {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  color: var(--primary);
+  background: rgba(255, 107, 107, 0.1);
+}
+
 .total-amount {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md);
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 217, 61, 0.1));
+  background: linear-gradient(135deg, rgba(107, 203, 119, 0.2), rgba(107, 203, 119, 0.1));
   border-radius: var(--radius-md);
-  border-left: 4px solid var(--primary);
-}
-
-.total-amount span {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.total-amount strong {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--primary);
-}
-
-/* 메모 */
-.form-section label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.form-section textarea {
-  width: 100%;
-  padding: var(--spacing-md);
-  font-size: 14px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  resize: vertical;
-  font-family: inherit;
-  transition: all 0.2s ease;
-}
-
-.form-section textarea:focus {
-  border-color: var(--primary);
-}
-
-.char-count {
-  display: block;
-  text-align: right;
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
+  color: var(--accent);
 }
 
 /* 저장 버튼 */
@@ -437,30 +319,31 @@
   opacity: 0.6;
 }
 
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
 /* 반응형 */
 @media (max-width: 768px) {
-  .meal-modal-advanced {
-    max-width: 95vw;
-    max-height: 95vh;
+  .meal-modal {
+    max-width: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .participants-grid {
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   }
 
-  .participant-btn {
-    font-size: 12px;
-  }
-
-  .item-name {
-    font-size: 14px;
-  }
-
-  .item-amount {
-    font-size: 15px;
-  }
-
-  .total-amount strong {
-    font-size: 18px;
+  .item-name-amount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 }
