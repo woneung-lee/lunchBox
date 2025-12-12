@@ -3,6 +3,7 @@ import {
   doc,
   setDoc,
   getDocs,
+  updateDoc,
   deleteDoc,
   query,
   where,
@@ -76,6 +77,64 @@ export const createMeal = async (groupId, userId, dateKey, mealData) => {
   }
 };
 
+export const updateMeal = async (mealId, mealData) => {
+  try {
+    const { restaurantId, restaurantName, restaurantCategory, items, memo } = mealData;
+
+    const updateData = {
+      updatedAt: new Date().toISOString()
+    };
+
+    if (restaurantId !== undefined) {
+      updateData.restaurantId = restaurantId;
+      updateData.restaurantName = restaurantName;
+      updateData.restaurantCategory = restaurantCategory;
+    }
+
+    if (items !== undefined) {
+      if (!items || items.length === 0) {
+        throw new Error('음식을 추가해주세요.');
+      }
+
+      const validatedItems = items.map(item => {
+        if (item.type === 'individual') {
+          return {
+            id: item.id || `item_${Date.now()}_${Math.random()}`,
+            type: 'individual',
+            name: item.name.trim(),
+            amount: Number(item.amount),
+            memberId: item.memberId
+          };
+        } else if (item.type === 'shared') {
+          const splitAmount = Math.round(Number(item.amount) / item.participants.length);
+          return {
+            id: item.id || `item_${Date.now()}_${Math.random()}`,
+            type: 'shared',
+            name: item.name.trim(),
+            amount: Number(item.amount),
+            participants: item.participants,
+            splitAmount: splitAmount
+          };
+        }
+        throw new Error('잘못된 음식 타입입니다.');
+      });
+
+      updateData.items = validatedItems;
+    }
+
+    if (memo !== undefined) {
+      updateData.memo = memo.trim();
+    }
+
+    await updateDoc(doc(db, 'meals', mealId), updateData);
+
+    return { success: true };
+  } catch (error) {
+    console.error('식사 기록 수정 오류:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 export const getDateMeals = async (groupId, dateKey) => {
   try {
     const q = query(
@@ -130,6 +189,20 @@ export const deleteMeal = async (mealId) => {
     console.error('식사 기록 삭제 오류:', error);
     return { success: false, error: error.message };
   }
+};
+
+export const calculateDateTotal = (meals) => {
+  if (!meals || !Array.isArray(meals) || meals.length === 0) {
+    return 0;
+  }
+
+  return meals.reduce((total, meal) => {
+    if (!meal.items || !Array.isArray(meal.items)) return total;
+    
+    return total + meal.items.reduce((sum, item) => {
+      return sum + (Number(item.amount) || 0);
+    }, 0);
+  }, 0);
 };
 
 export const calculateMemberSettlement = (meals, memberId) => {
