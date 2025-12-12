@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { X, Store, ArrowRight, ArrowLeft, Check } from 'lucide-react';
+import { X, Store, Users, DollarSign, Plus } from 'lucide-react';
 import { getGroupRestaurants, createRestaurant } from '../utils/restaurants';
 import { getCurrentUser } from '../utils/auth';
-import { calculateSettlement, calculateTotalAmount, formatAmount, getParticipantIcon } from '../utils/meals';
-import RestaurantList from './RestaurantList';
+import { formatAmount } from '../utils/meals';
 import RestaurantModal from './RestaurantModal';
-import ParticipantSelector from './ParticipantSelector';
-import MenuItemManager from './MenuItemManager';
 import './MealModal.css';
 
 export default function MealModal({ 
@@ -17,17 +14,17 @@ export default function MealModal({
   group,
   meal = null 
 }) {
-  const [step, setStep] = useState(1); // 1: 음식점, 2: 참여자, 3: 메뉴
   const [restaurants, setRestaurants] = useState([]);
   const [isRestaurantModalOpen, setIsRestaurantModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [guestName, setGuestName] = useState('');
   
   const [formData, setFormData] = useState({
     restaurantId: '',
     restaurantName: '',
     restaurantCategory: '',
+    totalAmount: '',
     participants: [],
-    items: [],
     memo: ''
   });
 
@@ -36,18 +33,15 @@ export default function MealModal({
       loadRestaurants();
       
       if (meal) {
-        // 수정 모드
         setFormData({
           restaurantId: meal.restaurantId,
           restaurantName: meal.restaurantName,
           restaurantCategory: meal.restaurantCategory,
+          totalAmount: meal.totalAmount.toString(),
           participants: meal.participants,
-          items: meal.items,
           memo: meal.memo || ''
         });
-        setStep(3); // 바로 메뉴 입력 단계로
       } else {
-        // 추가 모드 초기화
         resetForm();
       }
     }
@@ -58,11 +52,11 @@ export default function MealModal({
       restaurantId: '',
       restaurantName: '',
       restaurantCategory: '',
+      totalAmount: '',
       participants: [],
-      items: [],
       memo: ''
     });
-    setStep(1);
+    setGuestName('');
   };
 
   const loadRestaurants = async () => {
@@ -79,7 +73,6 @@ export default function MealModal({
       restaurantName: restaurant.name,
       restaurantCategory: restaurant.category
     });
-    setStep(2);
   };
 
   const handleCreateRestaurant = async (restaurantData) => {
@@ -95,36 +88,79 @@ export default function MealModal({
     }
   };
 
-  const handleNext = () => {
-    if (step === 1 && !formData.restaurantId) {
+  // 참여자 토글 (멤버)
+  const handleToggleMember = (userId, userName) => {
+    const exists = formData.participants.some(p => p.id === userId);
+    
+    if (exists) {
+      setFormData({
+        ...formData,
+        participants: formData.participants.filter(p => p.id !== userId)
+      });
+    } else {
+      setFormData({
+        ...formData,
+        participants: [
+          ...formData.participants,
+          { id: userId, name: userName, type: 'member' }
+        ]
+      });
+    }
+  };
+
+  // 게스트 추가
+  const handleAddGuest = (e) => {
+    e.preventDefault();
+    
+    if (!guestName.trim()) {
+      alert('게스트 이름을 입력해주세요.');
+      return;
+    }
+
+    const guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+    
+    setFormData({
+      ...formData,
+      participants: [
+        ...formData.participants,
+        { id: guestId, name: guestName.trim(), type: 'guest' }
+      ]
+    });
+    
+    setGuestName('');
+  };
+
+  // 게스트 삭제
+  const handleRemoveGuest = (guestId) => {
+    setFormData({
+      ...formData,
+      participants: formData.participants.filter(p => p.id !== guestId)
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.restaurantId) {
       alert('음식점을 선택해주세요.');
       return;
     }
-    
-    if (step === 2 && formData.participants.length === 0) {
+
+    if (!formData.totalAmount || formData.totalAmount <= 0) {
+      alert('총 금액을 입력해주세요.');
+      return;
+    }
+
+    if (formData.participants.length === 0) {
       alert('참여자를 선택해주세요.');
-      return;
-    }
-    
-    setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (meal && step === 3) {
-      // 수정 모드에서 메뉴 단계는 뒤로가기 불가
-      return;
-    }
-    setStep(step - 1);
-  };
-
-  const handleSubmit = async () => {
-    if (formData.items.length === 0) {
-      alert('메뉴를 추가해주세요.');
       return;
     }
 
     setLoading(true);
-    await onSave(formData);
+    await onSave({
+      ...formData,
+      totalAmount: Number(formData.totalAmount)
+    });
     setLoading(false);
   };
 
@@ -137,16 +173,13 @@ export default function MealModal({
 
   if (!isOpen) return null;
 
-  const settlement = formData.items.length > 0 && formData.participants.length > 0
-    ? calculateSettlement(formData.items, formData.participants)
-    : {};
-  
-  const totalAmount = calculateTotalAmount(formData.items);
+  const splitAmount = formData.totalAmount && formData.participants.length > 0
+    ? Math.round(Number(formData.totalAmount) / formData.participants.length)
+    : 0;
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content meal-modal-v2" onClick={(e) => e.stopPropagation()}>
-        {/* 헤더 */}
+      <div className="modal-content meal-modal-simple" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="header-with-icon">
             <Store size={24} color="var(--primary)" />
@@ -157,160 +190,157 @@ export default function MealModal({
           </button>
         </div>
 
-        {/* 단계 표시 */}
-        <div className="step-indicator">
-          <div className={`step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'completed' : ''}`}>
-            <div className="step-number">1</div>
-            <div className="step-label">음식점</div>
-          </div>
-          <div className="step-line"></div>
-          <div className={`step ${step >= 2 ? 'active' : ''} ${step > 2 ? 'completed' : ''}`}>
-            <div className="step-number">2</div>
-            <div className="step-label">참여자</div>
-          </div>
-          <div className="step-line"></div>
-          <div className={`step ${step >= 3 ? 'active' : ''}`}>
-            <div className="step-number">3</div>
-            <div className="step-label">메뉴</div>
-          </div>
-        </div>
-
-        {/* Step 1: 음식점 선택 */}
-        {step === 1 && (
-          <div className="modal-body">
-            <button 
-              type="button"
-              className="btn-add-restaurant"
-              onClick={() => setIsRestaurantModalOpen(true)}
-            >
-              새 음식점 등록
-            </button>
-
-            {restaurants.length === 0 ? (
-              <div className="empty-state">
-                <p>등록된 음식점이 없습니다</p>
-                <small>위 버튼을 눌러 음식점을 등록해주세요</small>
-              </div>
-            ) : (
-              <RestaurantList
-                restaurants={restaurants}
-                onSelect={handleRestaurantSelect}
-              />
-            )}
-          </div>
-        )}
-
-        {/* Step 2: 참여자 선택 */}
-        {step === 2 && (
-          <div className="modal-body">
-            <div className="selected-restaurant-badge">
-              <span className="badge-icon">{formData.restaurantCategory}</span>
-              <span className="badge-name">{formData.restaurantName}</span>
-            </div>
-
-            <ParticipantSelector
-              group={group}
-              selectedParticipants={formData.participants}
-              onParticipantsChange={(participants) => setFormData({ ...formData, participants })}
-            />
-
-            <div className="button-group">
-              <button className="btn-back" onClick={handleBack}>
-                <ArrowLeft size={18} />
-                이전
-              </button>
-              <button className="btn-next" onClick={handleNext}>
-                다음
-                <ArrowRight size={18} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: 메뉴 입력 */}
-        {step === 3 && (
-          <div className="modal-body">
-            <div className="selected-info">
-              <div className="info-row">
-                <span className="info-label">음식점</span>
-                <span className="info-value">{formData.restaurantName}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">참여자</span>
-                <span className="info-value">{formData.participants.length}명</span>
-              </div>
-            </div>
-
-            <MenuItemManager
-              items={formData.items}
-              participants={formData.participants}
-              onItemsChange={(items) => setFormData({ ...formData, items })}
-            />
-
-            {/* 정산 미리보기 */}
-            {formData.items.length > 0 && (
-              <div className="settlement-preview">
-                <h4>💰 정산 미리보기</h4>
-                <div className="settlement-total">
-                  <span>총 금액</span>
-                  <span className="total-amount">{formatAmount(totalAmount)}원</span>
-                </div>
-                <div className="settlement-list">
-                  {formData.participants.map(participant => (
-                    <div key={participant.id} className="settlement-row">
-                      <span className="participant-info">
-                        <span className="participant-icon">
-                          {getParticipantIcon(participant.type)}
-                        </span>
-                        {participant.name}
-                      </span>
-                      <span className="participant-amount">
-                        {formatAmount(settlement[participant.id] || 0)}원
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 메모 */}
-            <div className="form-group">
-              <label htmlFor="memo">메모 (선택)</label>
-              <textarea
-                id="memo"
-                value={formData.memo}
-                onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
-                placeholder="특이사항을 입력하세요"
-                rows="2"
-                maxLength="200"
-              />
-              <span className="char-count">{formData.memo.length}/200</span>
-            </div>
-
-            <div className="button-group">
-              {!meal && (
-                <button className="btn-back" onClick={handleBack}>
-                  <ArrowLeft size={18} />
-                  이전
+        <form onSubmit={handleSubmit} className="modal-body">
+          {/* 음식점 선택 */}
+          <div className="form-section">
+            <h3><Store size={18} /> 음식점</h3>
+            
+            {!formData.restaurantId ? (
+              <>
+                <button 
+                  type="button"
+                  className="btn-add-restaurant"
+                  onClick={() => setIsRestaurantModalOpen(true)}
+                >
+                  <Plus size={18} />
+                  새 음식점 등록
                 </button>
-              )}
-              <button 
-                className="btn-submit"
-                onClick={handleSubmit}
-                disabled={loading || formData.items.length === 0}
-              >
-                {loading ? '저장 중...' : (
-                  <>
-                    <Check size={18} />
-                    {meal ? '수정하기' : '저장하기'}
-                  </>
+
+                {restaurants.length > 0 && (
+                  <div className="restaurant-list-simple">
+                    {restaurants.map(restaurant => (
+                      <button
+                        key={restaurant.id}
+                        type="button"
+                        className="restaurant-item"
+                        onClick={() => handleRestaurantSelect(restaurant)}
+                      >
+                        <span className="restaurant-icon">{restaurant.category}</span>
+                        <span className="restaurant-name">{restaurant.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </button>
+              </>
+            ) : (
+              <div className="selected-restaurant">
+                <span className="selected-icon">{formData.restaurantCategory}</span>
+                <span className="selected-name">{formData.restaurantName}</span>
+                <button
+                  type="button"
+                  className="btn-change"
+                  onClick={() => setFormData({ ...formData, restaurantId: '', restaurantName: '', restaurantCategory: '' })}
+                >
+                  변경
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* 총 금액 */}
+          <div className="form-section">
+            <h3><DollarSign size={18} /> 총 금액</h3>
+            <input
+              type="number"
+              value={formData.totalAmount}
+              onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
+              placeholder="총 금액을 입력하세요"
+              min="0"
+              step="100"
+              className="amount-input"
+            />
+          </div>
+
+          {/* 참여자 선택 */}
+          <div className="form-section">
+            <h3><Users size={18} /> 참여자 ({formData.participants.length}명)</h3>
+            
+            {/* 그룹 멤버 */}
+            <div className="participants-grid">
+              {Object.entries(group.memberNames || {}).map(([userId, userName]) => (
+                <button
+                  key={userId}
+                  type="button"
+                  className={`participant-btn ${formData.participants.some(p => p.id === userId) ? 'active' : ''}`}
+                  onClick={() => handleToggleMember(userId, userName)}
+                >
+                  👤 {userName}
+                </button>
+              ))}
+            </div>
+
+            {/* 게스트 추가 */}
+            <div className="guest-section">
+              <form onSubmit={handleAddGuest} className="guest-form">
+                <input
+                  type="text"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  placeholder="게스트 이름 입력"
+                  maxLength={20}
+                />
+                <button type="submit" className="btn-add-guest">
+                  <Plus size={18} />
+                  게스트 추가
+                </button>
+              </form>
+
+              {/* 추가된 게스트 목록 */}
+              {formData.participants.filter(p => p.type === 'guest').length > 0 && (
+                <div className="guest-list">
+                  {formData.participants
+                    .filter(p => p.type === 'guest')
+                    .map(guest => (
+                      <div key={guest.id} className="guest-tag">
+                        🎫 {guest.name}
+                        <button
+                          type="button"
+                          className="btn-remove"
+                          onClick={() => handleRemoveGuest(guest.id)}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
-        )}
 
-        {/* 음식점 등록 모달 */}
+          {/* N빵 결과 */}
+          {splitAmount > 0 && (
+            <div className="split-result">
+              <div className="split-info">
+                <span className="split-label">1인당 금액</span>
+                <span className="split-amount">{formatAmount(splitAmount)}원</span>
+              </div>
+              <small>{formData.totalAmount.toLocaleString()}원 ÷ {formData.participants.length}명</small>
+            </div>
+          )}
+
+          {/* 메모 */}
+          <div className="form-section">
+            <label htmlFor="memo">메모 (선택)</label>
+            <textarea
+              id="memo"
+              value={formData.memo}
+              onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+              placeholder="특이사항을 입력하세요"
+              rows="2"
+              maxLength="200"
+            />
+            <span className="char-count">{formData.memo.length}/200</span>
+          </div>
+
+          <button 
+            type="submit" 
+            className="btn-save"
+            disabled={loading || !formData.restaurantId || !formData.totalAmount || formData.participants.length === 0}
+          >
+            {loading ? '저장 중...' : meal ? '수정하기' : '저장하기'}
+          </button>
+        </form>
+
         <RestaurantModal
           isOpen={isRestaurantModalOpen}
           onClose={() => setIsRestaurantModalOpen(false)}
