@@ -83,7 +83,7 @@ export default function DateDetail() {
         {canAddMeal && (
           <button
             className="btn-add-meal"
-            onClick={() => alert('4단계에서 구현됩니다!')}
+            onClick={() => alert('5단계에서 구현됩니다!')}
           >
             <Plus size={24} />
             식사 기록 추가
@@ -93,13 +93,15 @@ export default function DateDetail() {
         {/* 안내 메시지 */}
         <div className="info-notice">
           <div className="notice-card">
-            <h4>🚀 4단계 준비 중</h4>
-            <p>음식점 등록 및 식사 기록 기능이 추가될 예정입니다</p>
+            <h4>🚀 5단계 준비 중</h4>
+            <p>식사 기록 및 정산 기능이 추가될 예정입니다</p>
             <ul>
               <li>음식점 선택</li>
               <li>메뉴 및 가격 입력</li>
-              <li>N빵 계산</li>
+              <li>참여자 선택</li>
+              <li>N빵 자동 계산</li>
               <li>정산 내역 확인</li>
+              <li>Excel 내보내기</li>
             </ul>
           </div>
         </div>
