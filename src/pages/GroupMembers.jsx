@@ -1,177 +1,382 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
-import { Users, Plus, Edit2, Trash2, Phone, FileText } from 'lucide-react';
-import { getRegularMembers, addRegularMember, updateRegularMember, deleteRegularMember } from '../utils/regulars';
-import RegularMemberModal from '../components/RegularMemberModal';
+import { useOutletContext } from 'react-router-dom';
+import { Plus, Search, Edit2, Trash2, User, CheckCircle } from 'lucide-react';
+import { 
+  getGroupMembers, 
+  addMember, 
+  updateMember, 
+  deleteMember,
+  getCurrentUserMember,
+  setMyNickname 
+} from '../utils/members';
+import { getCurrentUser } from '../utils/auth';
 import './GroupMembers.css';
 
 export default function GroupMembers() {
-  const { groupId } = useParams();
-  const { group, loadGroup } = useOutletContext();
+  const { group } = useOutletContext();
+  const [members, setMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [currentUserMember, setCurrentUserMember] = useState(null);
+  
+  // 본인 닉네임 설정
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [nickname, setNickname] = useState('');
+  
+  // 모임원 추가/수정 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    memo: ''
+  });
 
-  const handleCreate = async (memberData) => {
-    const result = await addRegularMember(groupId, memberData);
-    if (result.success) {
-      setIsModalOpen(false);
-      await loadGroup();
-      alert('모임원이 등록되었습니다! 🎉');
-    } else {
-      alert(result.error);
+  useEffect(() => {
+    if (group?.id) {
+      loadMembers();
     }
-  };
+  }, [group]);
 
-  const handleUpdate = async (memberData) => {
-    const result = await updateRegularMember(groupId, editingId, memberData);
-    if (result.success) {
-      setIsModalOpen(false);
-      setEditingMember(null);
-      setEditingId(null);
-      await loadGroup();
-      alert('모임원이 수정되었습니다! ✅');
-    } else {
-      alert(result.error);
+  const loadMembers = async () => {
+    setLoading(true);
+    const user = getCurrentUser();
+    
+    const [membersResult, currentResult] = await Promise.all([
+      getGroupMembers(group.id),
+      getCurrentUserMember(group.id, user.uid)
+    ]);
+    
+    if (membersResult.success) {
+      setMembers(membersResult.members);
     }
-  };
-
-  const handleDelete = async (regularId) => {
-    if (window.confirm('이 모임원을 삭제하시겠습니까?')) {
-      const result = await deleteRegularMember(groupId, regularId);
-      if (result.success) {
-        await loadGroup();
-        alert('모임원이 삭제되었습니다.');
-      } else {
-        alert(result.error);
+    
+    if (currentResult.success) {
+      setCurrentUserMember(currentResult.member);
+      if (currentResult.member) {
+        setNickname(currentResult.member.name);
       }
     }
+    
+    setLoading(false);
   };
 
-  const handleEdit = (regularId, regular) => {
-    setEditingId(regularId);
-    setEditingMember(regular);
+  // 본인 닉네임 저장
+  const handleSaveNickname = async () => {
+    if (!nickname.trim()) {
+      alert('닉네임을 입력해주세요.');
+      return;
+    }
+
+    const user = getCurrentUser();
+    const result = await setMyNickname(group.id, user.uid, nickname.trim());
+    
+    if (result.success) {
+      setIsEditingNickname(false);
+      await loadMembers();
+    } else {
+      alert(result.error || '닉네임 설정에 실패했습니다.');
+    }
+  };
+
+  // 모임원 추가 모달 열기
+  const handleOpenAddModal = () => {
+    setEditingMember(null);
+    setFormData({ name: '', phone: '', memo: '' });
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingMember(null);
-    setEditingId(null);
+  // 모임원 수정 모달 열기
+  const handleOpenEditModal = (member) => {
+    setEditingMember(member);
+    setFormData({
+      name: member.name,
+      phone: member.phone || '',
+      memo: member.memo || ''
+    });
+    setIsModalOpen(true);
   };
 
-  const regularMembers = group?.regularMembers || {};
-  const filteredMembers = Object.entries(regularMembers)
-    .filter(([_, member]) => member !== null)
-    .filter(([_, member]) => 
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.phone.includes(searchTerm) ||
-      member.memo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // 모임원 저장
+  const handleSaveMember = async (e) => {
+    e.preventDefault();
 
-  const appMembers = group?.memberNames || {};
+    if (!formData.name.trim()) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
+
+    const user = getCurrentUser();
+
+    let result;
+    if (editingMember) {
+      result = await updateMember(editingMember.id, formData);
+    } else {
+      result = await addMember(group.id, user.uid, {
+        ...formData,
+        isAppUser: false
+      });
+    }
+
+    if (result.success) {
+      setIsModalOpen(false);
+      await loadMembers();
+    } else {
+      alert(result.error || '저장에 실패했습니다.');
+    }
+  };
+
+  // 모임원 삭제
+  const handleDeleteMember = async (member) => {
+    if (!confirm(`${member.name}님을 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    const result = await deleteMember(member.id);
+
+    if (result.success) {
+      await loadMembers();
+    } else {
+      alert(result.error || '삭제에 실패했습니다.');
+    }
+  };
+
+  // 검색 필터
+  const filteredMembers = members.filter(member => {
+    const query = searchQuery.toLowerCase();
+    return (
+      member.name.toLowerCase().includes(query) ||
+      (member.phone && member.phone.includes(query)) ||
+      (member.memo && member.memo.toLowerCase().includes(query))
+    );
+  });
+
+  // 본인과 다른 모임원 분리
+  const currentUserId = getCurrentUser()?.uid;
+  const myMember = filteredMembers.find(m => m.userId === currentUserId);
+  const otherMembers = filteredMembers.filter(m => m.userId !== currentUserId);
 
   return (
     <div className="group-members">
-      {/* 헤더 */}
-      <div className="members-header">
-        <div className="header-title">
-          <Users size={24} />
-          <h2>모임원 관리</h2>
+      {/* 본인 닉네임 카드 */}
+      <div className="my-nickname-card">
+        <div className="card-header">
+          <User size={20} color="var(--primary)" />
+          <h3>내 닉네임</h3>
         </div>
-        <button className="btn-add" onClick={() => setIsModalOpen(true)}>
+        
+        {isEditingNickname ? (
+          <div className="nickname-edit-form">
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="닉네임 입력"
+              maxLength={20}
+              autoFocus
+            />
+            <div className="edit-actions">
+              <button 
+                className="btn-save-nickname"
+                onClick={handleSaveNickname}
+              >
+                <CheckCircle size={16} />
+                저장
+              </button>
+              <button 
+                className="btn-cancel"
+                onClick={() => {
+                  setIsEditingNickname(false);
+                  setNickname(currentUserMember?.name || '');
+                }}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="nickname-display">
+            <div className="nickname-value">
+              {currentUserMember ? currentUserMember.name : '닉네임 미설정'}
+            </div>
+            <button 
+              className="btn-edit-nickname"
+              onClick={() => setIsEditingNickname(true)}
+            >
+              <Edit2 size={16} />
+              {currentUserMember ? '수정' : '설정'}
+            </button>
+          </div>
+        )}
+        
+        <p className="nickname-hint">
+          💡 모임원들이 보는 내 이름입니다
+        </p>
+      </div>
+
+      {/* 검색 & 추가 */}
+      <div className="members-header">
+        <h2>모임원 관리</h2>
+        <button className="btn-add" onClick={handleOpenAddModal}>
           <Plus size={20} />
-          등록
+          모임원 추가
         </button>
       </div>
 
-      {/* 앱 가입 멤버 */}
-      <div className="member-section">
-        <h3>📱 그룹 멤버 ({Object.keys(appMembers).length}명)</h3>
-        <div className="app-members-list">
-          {Object.entries(appMembers).map(([userId, nickname]) => (
-            <div key={userId} className="member-card app-member">
-              <div className="member-icon">👤</div>
-              <div className="member-info">
-                <div className="member-name">{nickname}</div>
-                <div className="member-badge">앱 가입자</div>
+      <div className="search-box">
+        <Search size={20} />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="이름, 전화번호, 메모로 검색"
+        />
+      </div>
+
+      {/* 모임원 목록 */}
+      {loading ? (
+        <div className="loading">로딩 중...</div>
+      ) : (
+        <>
+          <div className="members-count">
+            전체 {filteredMembers.length}명
+          </div>
+
+          <div className="members-list">
+            {filteredMembers.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">👥</div>
+                <p>모임원이 없습니다</p>
+                <small>모임원을 추가해보세요!</small>
               </div>
+            ) : (
+              <>
+                {/* 본인 */}
+                {myMember && (
+                  <div className="member-card my-card">
+                    <div className="member-info">
+                      <div className="member-avatar">
+                        <User size={24} />
+                      </div>
+                      <div className="member-details">
+                        <div className="member-name">
+                          {myMember.name}
+                          <span className="me-badge">나</span>
+                        </div>
+                        {myMember.phone && (
+                          <div className="member-phone">📞 {myMember.phone}</div>
+                        )}
+                        {myMember.memo && (
+                          <div className="member-memo">📝 {myMember.memo}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 다른 모임원들 */}
+                {otherMembers.map(member => (
+                  <div key={member.id} className="member-card">
+                    <div className="member-info">
+                      <div className="member-avatar">
+                        <User size={24} />
+                      </div>
+                      <div className="member-details">
+                        <div className="member-name">
+                          {member.name}
+                          {member.isAppUser && (
+                            <span className="app-user-badge">앱 사용자</span>
+                          )}
+                        </div>
+                        {member.phone && (
+                          <div className="member-phone">📞 {member.phone}</div>
+                        )}
+                        {member.memo && (
+                          <div className="member-memo">📝 {member.memo}</div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {!member.isAppUser && (
+                      <div className="member-actions">
+                        <button
+                          className="btn-icon"
+                          onClick={() => handleOpenEditModal(member)}
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          className="btn-icon btn-delete"
+                          onClick={() => handleDeleteMember(member)}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* 모임원 추가/수정 모달 */}
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal-content member-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editingMember ? '모임원 수정' : '모임원 추가'}</h2>
+              <button className="btn-close" onClick={() => setIsModalOpen(false)}>
+                ✕
+              </button>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* 모임원 */}
-      <div className="member-section">
-        <div className="section-title">
-          <h3>👥 모임원 ({filteredMembers.length}명)</h3>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="이름, 전화번호 검색..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        {filteredMembers.length === 0 ? (
-          <div className="empty-members">
-            <div className="empty-icon">👥</div>
-            <h4>등록된 모임원이 없습니다</h4>
-            <p>자주 함께하는 사람들을 모임원으로 등록하세요</p>
-            <button className="btn-add-empty" onClick={() => setIsModalOpen(true)}>
-              <Plus size={20} />
-              모임원 등록
-            </button>
-          </div>
-        ) : (
-          <div className="regular-members-list">
-            {filteredMembers.map(([regularId, member]) => (
-              <div key={regularId} className="member-card regular-member">
-                <div className="member-icon">👥</div>
-                <div className="member-info">
-                  <div className="member-name">{member.name}</div>
-                  {member.phone && (
-                    <div className="member-detail">
-                      <Phone size={14} />
-                      {member.phone}
-                    </div>
-                  )}
-                  {member.memo && (
-                    <div className="member-detail">
-                      <FileText size={14} />
-                      {member.memo}
-                    </div>
-                  )}
-                </div>
-                <div className="member-actions">
-                  <button
-                    className="btn-edit"
-                    onClick={() => handleEdit(regularId, member)}
-                  >
-                    <Edit2 size={16} />
-                  </button>
-                  <button
-                    className="btn-delete"
-                    onClick={() => handleDelete(regularId)}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
+            <form onSubmit={handleSaveMember} className="modal-body">
+              <div className="form-group">
+                <label>
+                  이름 <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="예: 홍길동"
+                  maxLength={20}
+                  autoFocus
+                />
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* 모임원 등록/수정 모달 */}
-      <RegularMemberModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={editingMember ? handleUpdate : handleCreate}
-        regular={editingMember}
-      />
+              <div className="form-group">
+                <label>전화번호 (선택)</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="예: 010-1234-5678"
+                  maxLength={20}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>메모 (선택)</label>
+                <textarea
+                  value={formData.memo}
+                  onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+                  placeholder="예: 회사 동료"
+                  rows="3"
+                  maxLength="100"
+                />
+                <span className="char-count">{formData.memo.length}/100</span>
+              </div>
+
+              <button type="submit" className="btn-primary">
+                {editingMember ? '수정하기' : '추가하기'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
