@@ -1,71 +1,110 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { getCurrentUser } from '../utils/auth';
+import { Home, Store, Users, Settings, ChevronLeft } from 'lucide-react';
 import { getGroup } from '../utils/groups';
-import BottomNav from '../components/BottomNav';
 import './GroupLayout.css';
 
 export default function GroupLayout() {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('main');
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      navigate('/login');
-    } else {
-      setUser(currentUser);
+    if (groupId) {
       loadGroup();
     }
-  }, [groupId, navigate]);
+  }, [groupId]);
 
   const loadGroup = async () => {
     setLoading(true);
     const result = await getGroup(groupId);
+    
     if (result.success) {
       setGroup(result.group);
     } else {
       alert('그룹을 찾을 수 없습니다.');
-      navigate('/groups');
+      navigate('/');
     }
+    
     setLoading(false);
   };
 
-  if (loading || !group || !user) {
+  const handleBack = () => {
+    navigate('/');
+  };
+
+  const handleTabClick = (tab, path) => {
+    setActiveTab(tab);
+    navigate(`/group/${groupId}${path}`);
+  };
+
+  if (loading) {
     return (
-      <div className="group-layout-loading">
-        <div className="loading-spinner">🍱</div>
-        <p>로딩 중...</p>
+      <div className="group-layout loading">
+        <div className="loading-spinner">로딩 중...</div>
       </div>
     );
   }
 
+  if (!group) {
+    return null;
+  }
+
   return (
     <div className="group-layout">
-      {/* 상단 헤더 */}
+      {/* 헤더 */}
       <div className="group-header">
-        <button className="btn-back" onClick={() => navigate('/groups')}>
-          <ArrowLeft size={24} />
+        <button className="btn-back" onClick={handleBack}>
+          <ChevronLeft size={24} />
         </button>
         <div className="group-info">
-          <h1>{group.name}</h1>
-          <span className="group-badge" data-type={group.type}>
-            {group.type === 'manager' ? '총괄형' : '참여형'}
-          </span>
+          <h1 className="group-title">{group.name}</h1>
+          <p className="group-members">👥 멤버 {group.memberIds?.length || 0}명</p>
         </div>
+        <div className="header-spacer"></div>
       </div>
 
-      {/* 메인 콘텐츠 */}
+      {/* 컨텐츠 */}
       <div className="group-content">
-        <Outlet context={{ user, group, loadGroup }} />
+        <Outlet context={{ group, reloadGroup: loadGroup }} />
       </div>
 
       {/* 하단 네비게이션 */}
-      <BottomNav />
+      <nav className="bottom-nav">
+        <button
+          className={`nav-item ${activeTab === 'main' ? 'active' : ''}`}
+          onClick={() => handleTabClick('main', '')}
+        >
+          <Home size={24} />
+          <span>메인</span>
+        </button>
+
+        <button
+          className={`nav-item ${activeTab === 'restaurants' ? 'active' : ''}`}
+          onClick={() => handleTabClick('restaurants', '/restaurants')}
+        >
+          <Store size={24} />
+          <span>음식점</span>
+        </button>
+
+        <button
+          className={`nav-item ${activeTab === 'members' ? 'active' : ''}`}
+          onClick={() => handleTabClick('members', '/members')}
+        >
+          <Users size={24} />
+          <span>모임원</span>
+        </button>
+
+        <button
+          className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => handleTabClick('settings', '/settings')}
+        >
+          <Settings size={24} />
+          <span>설정</span>
+        </button>
+      </nav>
     </div>
   );
 }
