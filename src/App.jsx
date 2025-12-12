@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Groups from './pages/Groups';
 import GroupDetail from './pages/GroupDetail';
 import DateDetail from './pages/DateDetail';
+import GroupSettings from './pages/GroupSettings';
 import './styles/global.css';
 
 // 인증된 사용자만 접근 가능한 라우트
@@ -118,6 +119,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DateDetail />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/group/:groupId/settings" 
+          element={
+            <ProtectedRoute>
+              <GroupSettings />
             </ProtectedRoute>
           } 
         />
