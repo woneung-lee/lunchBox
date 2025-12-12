@@ -23,6 +23,48 @@
   color: var(--text-secondary);
 }
 
+/* 음식점 등록 버튼 */
+.btn-add-restaurant {
+  width: 100%;
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #5ab36a);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.2s ease;
+}
+
+.btn-add-restaurant:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 203, 119, 0.3);
+}
+
+/* 빈 음식점 목록 */
+.empty-restaurants {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--bg-main);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+}
+
+.empty-restaurants p {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-restaurants small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 /* 선택된 음식점 */
 .selected-restaurant {
   display: flex;
@@ -136,6 +178,10 @@
 }
 
 /* 폼 그룹 */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
 .form-group label {
   display: flex;
   align-items: center;
@@ -174,6 +220,37 @@
 .form-group textarea:focus {
   border-color: var(--primary);
   outline: none;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* 저장 버튼 */
+.btn-save {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.btn-save:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* 반응형 */
