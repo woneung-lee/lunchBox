@@ -30,6 +30,31 @@
   color: var(--primary);
 }
 
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.btn-refresh {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+  background: var(--bg-main);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: rotate(90deg);
+}
+
 .btn-logout {
   display: flex;
   align-items: center;
@@ -50,12 +75,45 @@
 
 .groups-content {
   min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
+/* 로딩 상태 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 60px;
+  margin-bottom: var(--spacing-md);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 빈 상태 */
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
   text-align: center;
   animation: fadeIn 0.5s ease;
 }
@@ -97,6 +155,41 @@
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
+/* 그룹 그리드 */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  animation: fadeIn 0.5s ease;
+}
+
+/* Floating 버튼 */
+.btn-floating {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.btn-floating:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 24px rgba(255, 107, 107, 0.5);
+}
+
+.btn-floating:active {
+  transform: scale(0.95);
+}
+
 .coming-soon-notice {
   margin-top: var(--spacing-xl);
   padding: var(--spacing-md);
@@ -127,11 +220,25 @@
     font-size: 24px;
   }
 
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .empty-icon {
     font-size: 60px;
   }
 
   .empty-state h2 {
     font-size: 20px;
+  }
+
+  .groups-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-floating {
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
   }
 }
