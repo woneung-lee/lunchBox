@@ -3,17 +3,6 @@ import { X, Store } from 'lucide-react';
 import { RESTAURANT_CATEGORIES } from '../utils/restaurants';
 import './RestaurantModal.css';
 
-const CATEGORY_ICONS = {
-  '한식': '🍚',
-  '일식': '🍱',
-  '중식': '🥟',
-  '양식': '🍝',
-  '분식': '🍜',
-  '간식': '🍰',
-  '카페': '☕',
-  '기타': '🍴'
-};
-
 export default function RestaurantModal({ 
   isOpen, 
   onClose, 
@@ -22,7 +11,10 @@ export default function RestaurantModal({
 }) {
   const [formData, setFormData] = useState({
     name: '',
-    category: '한식',
+    category: '',
+    address: '',
+    phone: '',
+    memo: '',
     isFavorite: false
   });
   const [loading, setLoading] = useState(false);
@@ -32,12 +24,18 @@ export default function RestaurantModal({
       setFormData({
         name: restaurant.name,
         category: restaurant.category,
+        address: restaurant.address || '',
+        phone: restaurant.phone || '',
+        memo: restaurant.memo || '',
         isFavorite: restaurant.isFavorite || false
       });
     } else {
       setFormData({
         name: '',
-        category: '한식',
+        category: '',
+        address: '',
+        phone: '',
+        memo: '',
         isFavorite: false
       });
     }
@@ -51,6 +49,11 @@ export default function RestaurantModal({
       return;
     }
 
+    if (!formData.category) {
+      alert('카테고리를 선택해주세요.');
+      return;
+    }
+
     setLoading(true);
     await onSave(formData);
     setLoading(false);
@@ -60,7 +63,10 @@ export default function RestaurantModal({
     if (!loading) {
       setFormData({
         name: '',
-        category: '한식',
+        category: '',
+        address: '',
+        phone: '',
+        memo: '',
         isFavorite: false
       });
       onClose();
@@ -74,7 +80,7 @@ export default function RestaurantModal({
       <div className="modal-content restaurant-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="header-with-icon">
-            <Store size={24} color="var(--primary)" />
+            <Store size={24} color="var(--accent)" />
             <h2>{restaurant ? '음식점 수정' : '음식점 등록'}</h2>
           </div>
           <button className="btn-close" onClick={handleClose} disabled={loading}>
@@ -83,37 +89,79 @@ export default function RestaurantModal({
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          {/* 음식점 이름 */}
+          {/* 이름 */}
           <div className="form-group">
-            <label htmlFor="restaurantName">음식점 이름</label>
+            <label htmlFor="restaurantName">
+              이름 <span className="required">*</span>
+            </label>
             <input
               type="text"
               id="restaurantName"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="예: 김밥천국, 스타벅스"
+              placeholder="예: 김밥천국"
               maxLength={50}
               autoFocus
             />
-            <span className="char-count">{formData.name.length}/50</span>
           </div>
 
           {/* 카테고리 */}
           <div className="form-group">
-            <label>카테고리</label>
+            <label htmlFor="restaurantCategory">
+              카테고리 <span className="required">*</span>
+            </label>
             <div className="category-grid">
-              {Object.values(RESTAURANT_CATEGORIES).map((category) => (
+              {RESTAURANT_CATEGORIES.map(category => (
                 <button
                   key={category}
                   type="button"
                   className={`category-btn ${formData.category === category ? 'active' : ''}`}
                   onClick={() => setFormData({ ...formData, category })}
                 >
-                  <span className="category-icon">{CATEGORY_ICONS[category]}</span>
-                  <span className="category-name">{category}</span>
+                  {category}
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* 주소 */}
+          <div className="form-group">
+            <label htmlFor="restaurantAddress">주소 (선택)</label>
+            <input
+              type="text"
+              id="restaurantAddress"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="예: 서울시 강남구..."
+              maxLength={100}
+            />
+          </div>
+
+          {/* 전화번호 */}
+          <div className="form-group">
+            <label htmlFor="restaurantPhone">전화번호 (선택)</label>
+            <input
+              type="tel"
+              id="restaurantPhone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="예: 02-1234-5678"
+              maxLength={20}
+            />
+          </div>
+
+          {/* 메모 */}
+          <div className="form-group">
+            <label htmlFor="restaurantMemo">메모 (선택)</label>
+            <textarea
+              id="restaurantMemo"
+              value={formData.memo}
+              onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+              placeholder="예: 김밥이 맛있음"
+              rows="3"
+              maxLength="200"
+            />
+            <span className="char-count">{formData.memo.length}/200</span>
           </div>
 
           {/* 즐겨찾기 */}
@@ -124,17 +172,14 @@ export default function RestaurantModal({
                 checked={formData.isFavorite}
                 onChange={(e) => setFormData({ ...formData, isFavorite: e.target.checked })}
               />
-              <span className="checkbox-text">
-                ⭐ 즐겨찾기에 추가
-                <small>자주 가는 음식점으로 등록합니다</small>
-              </span>
+              <span>⭐ 즐겨찾기</span>
             </label>
           </div>
 
           <button 
             type="submit" 
             className="btn-save"
-            disabled={loading || !formData.name.trim()}
+            disabled={loading || !formData.name.trim() || !formData.category}
           >
             {loading ? '저장 중...' : restaurant ? '수정하기' : '등록하기'}
           </button>
