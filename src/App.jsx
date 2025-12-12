@@ -5,6 +5,7 @@ import { auth } from './config/firebase';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Groups from './pages/Groups';
+import GroupDetail from './pages/GroupDetail';
 import './styles/global.css';
 
 // 인증된 사용자만 접근 가능한 라우트
@@ -100,6 +101,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Groups />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/group/:groupId" 
+          element={
+            <ProtectedRoute>
+              <GroupDetail />
             </ProtectedRoute>
           } 
         />
