@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Store } from 'lucide-react';
 import { createMeal } from '../utils/meals';
+import { createRestaurant, RESTAURANT_CATEGORIES } from '../utils/restaurants';
 import { getCurrentUser } from '../utils/auth';
 import './MealModal.css';
 
@@ -11,12 +12,20 @@ export default function MealModal({
   groupId, 
   dateKey, 
   restaurants, 
-  members 
+  members,
+  onRestaurantAdded 
 }) {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [items, setItems] = useState([]);
   const [memo, setMemo] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // 음식점 즉시 추가
+  const [showNewRestaurant, setShowNewRestaurant] = useState(false);
+  const [newRestaurantName, setNewRestaurantName] = useState('');
+  const [newRestaurantCategory, setNewRestaurantCategory] = useState('한식');
+  const [newRestaurantAddress, setNewRestaurantAddress] = useState('');
+  const [newRestaurantPhone, setNewRestaurantPhone] = useState('');
 
   // 현재 추가 중인 음식 항목
   const [itemType, setItemType] = useState('individual');
@@ -41,6 +50,42 @@ export default function MealModal({
     setItemAmount('');
     setSelectedMemberId('');
     setSelectedParticipants([]);
+    setShowNewRestaurant(false);
+    setNewRestaurantName('');
+    setNewRestaurantCategory('한식');
+    setNewRestaurantAddress('');
+    setNewRestaurantPhone('');
+  };
+
+  // 새 음식점 추가
+  const handleAddNewRestaurant = async () => {
+    if (!newRestaurantName.trim()) {
+      alert('음식점 이름을 입력해주세요.');
+      return;
+    }
+
+    const user = getCurrentUser();
+    const result = await createRestaurant(groupId, user.uid, {
+      name: newRestaurantName.trim(),
+      category: newRestaurantCategory,
+      address: newRestaurantAddress.trim(),
+      phone: newRestaurantPhone.trim()
+    });
+
+    if (result.success) {
+      setSelectedRestaurant(result.restaurant);
+      setShowNewRestaurant(false);
+      setNewRestaurantName('');
+      setNewRestaurantAddress('');
+      setNewRestaurantPhone('');
+      
+      // 부모 컴포넌트에 알림
+      if (onRestaurantAdded) {
+        await onRestaurantAdded();
+      }
+    } else {
+      alert(result.error || '음식점 추가에 실패했습니다.');
+    }
   };
 
   const handleAddItem = () => {
@@ -89,7 +134,6 @@ export default function MealModal({
       setItems([...items, newItem]);
     }
 
-    // 폼 리셋
     setItemName('');
     setItemAmount('');
     setSelectedMemberId('');
@@ -168,38 +212,107 @@ export default function MealModal({
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          {/* 음식점 선택 */}
+          {/* 음식점 선택 또는 추가 */}
           <div className="form-group">
             <label>
               음식점 <span className="required">*</span>
             </label>
-            {selectedRestaurant ? (
-              <div className="selected-restaurant">
-                <Store size={20} />
-                <span>{selectedRestaurant.name}</span>
-                <button
-                  type="button"
-                  className="btn-change"
-                  onClick={() => setSelectedRestaurant(null)}
-                >
-                  변경
-                </button>
-              </div>
+            
+            {!showNewRestaurant ? (
+              <>
+                {selectedRestaurant ? (
+                  <div className="selected-restaurant">
+                    <Store size={20} />
+                    <span>{selectedRestaurant.name}</span>
+                    <button
+                      type="button"
+                      className="btn-change"
+                      onClick={() => setSelectedRestaurant(null)}
+                    >
+                      변경
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value === '__new__') {
+                          setShowNewRestaurant(true);
+                        } else {
+                          const restaurant = restaurants.find(r => r.id === e.target.value);
+                          setSelectedRestaurant(restaurant);
+                        }
+                      }}
+                    >
+                      <option value="">음식점 선택</option>
+                      {restaurants.map(restaurant => (
+                        <option key={restaurant.id} value={restaurant.id}>
+                          {restaurant.name} ({restaurant.category})
+                        </option>
+                      ))}
+                      <option value="__new__">➕ 새 음식점 추가</option>
+                    </select>
+                  </>
+                )}
+              </>
             ) : (
-              <select
-                value=""
-                onChange={(e) => {
-                  const restaurant = restaurants.find(r => r.id === e.target.value);
-                  setSelectedRestaurant(restaurant);
-                }}
-              >
-                <option value="">음식점 선택</option>
-                {restaurants.map(restaurant => (
-                  <option key={restaurant.id} value={restaurant.id}>
-                    {restaurant.name} ({restaurant.category})
-                  </option>
-                ))}
-              </select>
+              <div className="new-restaurant-form">
+                <div className="new-restaurant-header">
+                  <Store size={20} />
+                  <span>새 음식점 추가</span>
+                </div>
+                
+                <input
+                  type="text"
+                  value={newRestaurantName}
+                  onChange={(e) => setNewRestaurantName(e.target.value)}
+                  placeholder="음식점 이름 *"
+                  maxLength={50}
+                />
+
+                <select
+                  value={newRestaurantCategory}
+                  onChange={(e) => setNewRestaurantCategory(e.target.value)}
+                >
+                  {RESTAURANT_CATEGORIES.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  value={newRestaurantAddress}
+                  onChange={(e) => setNewRestaurantAddress(e.target.value)}
+                  placeholder="주소 (선택)"
+                  maxLength={100}
+                />
+
+                <input
+                  type="tel"
+                  value={newRestaurantPhone}
+                  onChange={(e) => setNewRestaurantPhone(e.target.value)}
+                  placeholder="전화번호 (선택)"
+                  maxLength={20}
+                />
+
+                <div className="new-restaurant-actions">
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowNewRestaurant(false)}
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-add-restaurant"
+                    onClick={handleAddNewRestaurant}
+                  >
+                    추가하기
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
