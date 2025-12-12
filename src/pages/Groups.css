@@ -54,6 +54,39 @@
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
+/* 오류 메시지 */
+.error-message {
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-message p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+.btn-retry {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-retry:hover {
+  background: var(--primary-dark);
+}
+
 /* 그룹 목록 */
 .groups-list {
   display: flex;
@@ -193,6 +226,12 @@
 
   .btn-create-group {
     justify-content: center;
+  }
+
+  .error-message {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
   }
 
   .group-card {
