@@ -1,0 +1,230 @@
+.group-detail-container {
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+.group-detail-header {
+  background: white;
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.btn-back,
+.btn-settings {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-back:hover,
+.btn-settings:hover {
+  background: var(--border);
+  transform: scale(1.05);
+}
+
+.group-title {
+  flex: 1;
+}
+
+.group-title h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.group-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.group-type-badge {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.group-type-badge[data-type="manager"] {
+  background: linear-gradient(135deg, #FFE5E5, #FFF0E5);
+  color: var(--primary);
+}
+
+.group-type-badge[data-type="participant"] {
+  background: linear-gradient(135deg, #E5F9E5, #E5F5FF);
+  color: var(--accent);
+}
+
+.member-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  background: var(--bg-main);
+  border-radius: var(--radius-sm);
+}
+
+.group-detail-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* 로딩 상태 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 60px;
+  margin-bottom: var(--spacing-md);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Coming Soon 섹션 */
+.coming-soon-section {
+  max-width: 600px;
+  margin: var(--spacing-xl) auto;
+  text-align: center;
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.coming-soon-icon {
+  margin-bottom: var(--spacing-lg);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.coming-soon-section h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.coming-soon-section > p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.feature-preview {
+  background: var(--bg-main);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.feature-preview h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.feature-preview ul {
+  list-style: none;
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.feature-preview li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: white;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+}
+
+.btn-back-to-list {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-back-to-list:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .group-detail-header {
+    padding: var(--spacing-md);
+  }
+
+  .group-title h1 {
+    font-size: 20px;
+  }
+
+  .group-detail-content {
+    padding: var(--spacing-md);
+  }
+
+  .coming-soon-section {
+    padding: var(--spacing-lg);
+  }
+
+  .coming-soon-section h2 {
+    font-size: 24px;
+  }
+
+  .coming-soon-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+}
