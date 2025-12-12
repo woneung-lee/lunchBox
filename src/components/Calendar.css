@@ -1,0 +1,237 @@
+.calendar-container {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* 헤더 */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border);
+}
+
+.btn-nav {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-nav:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.month-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.month-display h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-today {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-today:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* 요일 */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.weekday {
+  text-align: center;
+  padding: var(--spacing-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.weekday.sunday {
+  color: var(--primary);
+}
+
+.weekday.saturday {
+  color: #4A90E2;
+}
+
+/* 날짜 그리드 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: white;
+  border: 2px solid transparent;
+}
+
+.calendar-day:hover {
+  background: var(--bg-main);
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.calendar-day.other-month:hover {
+  background: white;
+  border-color: transparent;
+  transform: none;
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 217, 61, 0.1));
+  border-color: var(--primary);
+  font-weight: 700;
+}
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-weight: 700;
+  border-color: var(--primary);
+}
+
+.calendar-day.selected .day-number {
+  color: white;
+}
+
+.calendar-day.weekend .day-number {
+  color: var(--primary);
+}
+
+.calendar-day.weekend.saturday .day-number {
+  color: #4A90E2;
+}
+
+.calendar-day.selected.weekend .day-number {
+  color: white;
+}
+
+.day-number {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+/* 식사 기록 표시 */
+.meal-indicator {
+  position: absolute;
+  bottom: 4px;
+  display: flex;
+  gap: 2px;
+}
+
+.meal-indicator .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+.calendar-day.selected .meal-indicator .dot {
+  background: white;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: var(--spacing-md);
+  }
+
+  .calendar-header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .month-display h2 {
+    font-size: 18px;
+  }
+
+  .btn-nav {
+    width: 36px;
+    height: 36px;
+  }
+
+  .weekday {
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  .calendar-day {
+    padding: 4px;
+  }
+
+  .day-number {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-display {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .day-number {
+    font-size: 12px;
+  }
+
+  .calendar-day {
+    padding: 2px;
+  }
+}
