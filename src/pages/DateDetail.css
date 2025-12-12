@@ -1,289 +1,171 @@
-.date-detail-container {
-  min-height: 100vh;
-  background: var(--bg-main);
+.date-detail {
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.date-detail-header {
-  background: white;
-  padding: var(--spacing-lg);
+/* 헤더 */
+.date-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  border-bottom: 2px solid var(--border);
-  box-shadow: 0 2px 8px var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.btn-back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  border-color: var(--primary);
 }
 
 .date-info {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-}
-
-.date-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border-radius: var(--radius-md);
+  gap: var(--spacing-sm);
 }
 
-.date-info h1 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.group-name {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.date-detail-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-}
-
-/* 요약 정보 */
-.date-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.summary-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px var(--shadow);
-}
-
-.summary-card svg {
+.date-info svg {
   color: var(--primary);
   flex-shrink: 0;
 }
 
-.summary-icon {
-  font-size: 32px;
+.date-info h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-spacer {
+  width: 40px;
   flex-shrink: 0;
 }
 
-.summary-label {
-  display: block;
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
+/* 총액 */
+.total-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-.summary-value {
-  display: block;
-  font-size: 20px;
+.total-amount .label {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.total-amount .amount {
+  font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: white;
 }
 
-/* 식사 기록 섹션 */
-.meals-section {
+/* 식사 기록 목록 */
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xxl) var(--spacing-lg);
   background: white;
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
   box-shadow: 0 2px 8px var(--shadow);
-  min-height: 200px;
-}
-
-.empty-meals {
-  text-align: center;
-  padding: var(--spacing-xl);
 }
 
 .empty-icon {
   font-size: 80px;
   margin-bottom: var(--spacing-lg);
-  animation: bounce 2s infinite;
+  opacity: 0.5;
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.empty-meals h3 {
-  font-size: 20px;
+.empty-state p {
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin: 0 0 var(--spacing-xs) 0;
 }
 
-.empty-meals p {
+.empty-state small {
   font-size: 14px;
   color: var(--text-secondary);
 }
 
-.meals-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-/* 정산 내역 */
-.settlement-section {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-  box-shadow: 0 2px 8px var(--shadow);
-}
-
-.settlement-section h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 2px solid var(--border);
-}
-
-.settlement-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.settlement-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bg-main);
-  border-radius: var(--radius-md);
-}
-
-.settlement-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.settlement-amount {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-/* 식사 추가 버튼 */
+/* 추가 버튼 */
 .btn-add-meal {
-  width: 100%;
-  padding: var(--spacing-lg);
+  position: fixed;
+  bottom: 100px;
+  right: var(--spacing-lg);
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  font-size: 16px;
-  font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--accent), #5ab36a);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(107, 203, 119, 0.4);
   transition: all 0.2s ease;
-  position: sticky;
-  bottom: var(--spacing-lg);
+  z-index: 50;
 }
 
 .btn-add-meal:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(107, 203, 119, 0.5);
 }
 
-.btn-add-meal:active {
-  transform: translateY(0);
-}
-
-/* 로딩 상태 */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
+/* 로딩 */
+.loading {
   text-align: center;
-}
-
-.loading-spinner {
-  font-size: 60px;
-  margin-bottom: var(--spacing-md);
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-state p {
-  font-size: 14px;
+  padding: var(--spacing-xxl);
   color: var(--text-secondary);
 }
 
 /* 반응형 */
 @media (max-width: 768px) {
-  .date-detail-header {
+  .date-detail {
     padding: var(--spacing-md);
   }
 
-  .date-icon {
-    width: 40px;
-    height: 40px;
+  .date-info h2 {
+    font-size: 16px;
   }
 
-  .date-info h1 {
-    font-size: 18px;
+  .total-amount .label {
+    font-size: 14px;
   }
 
-  .date-detail-content {
-    padding: var(--spacing-md);
-  }
-
-  .date-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .meals-section {
-    padding: var(--spacing-md);
-  }
-
-  .settlement-section {
-    padding: var(--spacing-md);
-  }
-
-  .empty-icon {
-    font-size: 60px;
-  }
-
-  .empty-meals h3 {
-    font-size: 18px;
+  .total-amount .amount {
+    font-size: 20px;
   }
 
   .btn-add-meal {
-    padding: var(--spacing-md);
+    bottom: 90px;
+    right: var(--spacing-md);
+    width: 56px;
+    height: 56px;
   }
 }
