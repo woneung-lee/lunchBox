@@ -79,6 +79,70 @@
   border-color: var(--primary);
 }
 
+/* 새 음식점 추가 폼 */
+.new-restaurant-form {
+  padding: var(--spacing-md);
+  background: rgba(107, 203, 119, 0.05);
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.new-restaurant-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: var(--spacing-xs);
+}
+
+.new-restaurant-form input,
+.new-restaurant-form select {
+  margin: 0;
+}
+
+.new-restaurant-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: var(--spacing-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-add-restaurant {
+  flex: 1;
+  padding: var(--spacing-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-add-restaurant:hover {
+  background: #5ab36a;
+}
+
 /* 타입 선택 */
 .item-type-selector {
   display: grid;
