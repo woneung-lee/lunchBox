@@ -192,9 +192,9 @@ export const getCategoryIcon = (category) => {
 };
 
 /**
- * 카테고리 목록
+ * 카테고리 목록 (RestaurantModal에서 사용)
  */
-export const CATEGORIES = [
+export const RESTAURANT_CATEGORIES = [
   '한식',
   '일식',
   '중식',
