@@ -52,34 +52,46 @@
   padding: var(--spacing-lg);
 }
 
-/* 로딩 상태 */
-.loading-state {
+/* 요약 정보 */
+.date-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.summary-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
-.loading-spinner {
-  font-size: 60px;
-  margin-bottom: var(--spacing-md);
-  animation: spin 1s linear infinite;
+.summary-card svg {
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.summary-icon {
+  font-size: 32px;
+  flex-shrink: 0;
 }
 
-.loading-state p {
-  font-size: 14px;
+.summary-label {
+  display: block;
+  font-size: 13px;
   color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 /* 식사 기록 섹션 */
@@ -89,10 +101,7 @@
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
   box-shadow: 0 2px 8px var(--shadow);
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 200px;
 }
 
 .empty-meals {
@@ -127,6 +136,57 @@
   color: var(--text-secondary);
 }
 
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* 정산 내역 */
+.settlement-section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.settlement-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border);
+}
+
+.settlement-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.settlement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-main);
+  border-radius: var(--radius-md);
+}
+
+.settlement-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settlement-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* 식사 추가 버튼 */
 .btn-add-meal {
   width: 100%;
@@ -140,8 +200,9 @@
   color: white;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-lg);
   transition: all 0.2s ease;
+  position: sticky;
+  bottom: var(--spacing-lg);
 }
 
 .btn-add-meal:hover {
@@ -153,51 +214,34 @@
   transform: translateY(0);
 }
 
-/* 안내 메시지 */
-.info-notice {
-  animation: fadeIn 0.5s ease;
+/* 로딩 상태 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
 }
 
-.notice-card {
-  background: white;
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px var(--shadow);
-  border-left: 4px solid var(--primary);
+.loading-spinner {
+  font-size: 60px;
+  margin-bottom: var(--spacing-md);
+  animation: spin 1s linear infinite;
 }
 
-.notice-card h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.notice-card > p {
+.loading-state p {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: var(--spacing-md);
-}
-
-.notice-card ul {
-  list-style: none;
-  padding-left: var(--spacing-md);
-}
-
-.notice-card li {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
-  padding-left: var(--spacing-md);
-  position: relative;
-}
-
-.notice-card li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: var(--primary);
-  font-weight: bold;
 }
 
 /* 반응형 */
@@ -219,7 +263,15 @@
     padding: var(--spacing-md);
   }
 
+  .date-summary {
+    grid-template-columns: 1fr;
+  }
+
   .meals-section {
+    padding: var(--spacing-md);
+  }
+
+  .settlement-section {
     padding: var(--spacing-md);
   }
 
