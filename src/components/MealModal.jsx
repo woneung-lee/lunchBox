@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { X, Store, Users, DollarSign } from 'lucide-react';
-import { getGroupRestaurants } from '../utils/restaurants';
+import { X, Store, Users, DollarSign, Plus } from 'lucide-react';
+import { getGroupRestaurants, createRestaurant } from '../utils/restaurants';
+import { getCurrentUser } from '../utils/auth';
 import RestaurantList from './RestaurantList';
+import RestaurantModal from './RestaurantModal';
 import './MealModal.css';
 
 export default function MealModal({ 
@@ -23,6 +25,7 @@ export default function MealModal({
     memo: ''
   });
   const [loading, setLoading] = useState(false);
+  const [isRestaurantModalOpen, setIsRestaurantModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen && groupId) {
@@ -69,6 +72,20 @@ export default function MealModal({
       restaurantCategory: restaurant.category
     });
     setStep(2);
+  };
+
+  const handleCreateRestaurant = async (restaurantData) => {
+    const user = getCurrentUser();
+    const result = await createRestaurant(groupId, user.uid, restaurantData);
+    
+    if (result.success) {
+      setIsRestaurantModalOpen(false);
+      await loadRestaurants();
+      // 방금 등록한 음식점 자동 선택
+      handleRestaurantSelect(result.restaurant);
+    } else {
+      alert(result.error);
+    }
   };
 
   const handleParticipantToggle = (userId) => {
@@ -155,13 +172,23 @@ export default function MealModal({
           <div className="modal-body">
             <div className="step-header">
               <h3>🍽️ 음식점을 선택하세요</h3>
-              <p>등록된 음식점 목록에서 선택해주세요</p>
+              <p>등록된 음식점 목록에서 선택하거나 새로 등록하세요</p>
             </div>
+
+            {/* 음식점 등록 버튼 */}
+            <button 
+              type="button"
+              className="btn-add-restaurant"
+              onClick={() => setIsRestaurantModalOpen(true)}
+            >
+              <Plus size={20} />
+              새 음식점 등록
+            </button>
 
             {restaurants.length === 0 ? (
               <div className="empty-restaurants">
                 <p>등록된 음식점이 없습니다</p>
-                <small>설정에서 음식점을 먼저 등록해주세요</small>
+                <small>위 버튼을 눌러 음식점을 등록해주세요</small>
               </div>
             ) : (
               <RestaurantList
@@ -261,6 +288,14 @@ export default function MealModal({
           </form>
         )}
       </div>
+
+      {/* 음식점 등록 모달 */}
+      <RestaurantModal
+        isOpen={isRestaurantModalOpen}
+        onClose={() => setIsRestaurantModalOpen(false)}
+        onSave={handleCreateRestaurant}
+        restaurant={null}
+      />
     </div>
   );
 }
