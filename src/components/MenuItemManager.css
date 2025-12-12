@@ -1,0 +1,328 @@
+.menu-item-manager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.total-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 4px 12px;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 217, 61, 0.1));
+  border-radius: var(--radius-sm);
+}
+
+/* 메뉴 추가 버튼 */
+.add-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.btn-add-menu {
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-add-menu.individual {
+  background: linear-gradient(135deg, #6BCB77, #5ab36a);
+}
+
+.btn-add-menu.shared {
+  background: linear-gradient(135deg, #FFD93D, #f5c518);
+}
+
+.btn-add-menu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 메뉴 폼 */
+.menu-form {
+  padding: var(--spacing-md);
+  background: var(--bg-main);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--border);
+}
+
+.form-header h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.btn-cancel {
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: white;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  color: var(--primary);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.form-row input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.form-row input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.consumer-select label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.split-preview {
+  font-size: 12px;
+  color: var(--accent);
+  background: rgba(107, 203, 119, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.consumer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.consumer-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 13px;
+  font-weight: 500;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.consumer-btn:hover {
+  border-color: var(--accent);
+}
+
+.consumer-btn.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover {
+  background: #5ab36a;
+}
+
+/* 메뉴 목록 */
+.menu-list h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-md);
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.menu-item.individual {
+  border-left: 4px solid var(--accent);
+}
+
+.menu-item.shared {
+  border-left: 4px solid var(--secondary);
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 4px;
+}
+
+.item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.item-type-badge {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.menu-item.individual .item-type-badge {
+  background: rgba(107, 203, 119, 0.2);
+  color: var(--accent);
+}
+
+.menu-item.shared .item-type-badge {
+  background: rgba(255, 217, 61, 0.2);
+  color: #d4a017;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.item-consumers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.split-amount {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.item-actions button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.item-actions button:hover {
+  transform: scale(1.1);
+}
+
+.btn-edit:hover {
+  background: rgba(107, 203, 119, 0.2);
+  color: var(--accent);
+}
+
+.btn-delete:hover {
+  background: rgba(255, 107, 107, 0.2);
+  color: var(--primary);
+}
+
+/* 빈 메뉴 */
+.empty-menu {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--bg-main);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border);
+}
+
+.empty-menu p {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.empty-menu small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .consumer-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
+
+  .add-buttons {
+    grid-template-columns: 1fr;
+  }
+}

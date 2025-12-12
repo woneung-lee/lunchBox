@@ -1,0 +1,213 @@
+.participant-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border);
+}
+
+.section-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  margin: 0;
+}
+
+.section-header .count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 4px 10px;
+  background: rgba(107, 203, 119, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.participant-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.participant-group h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.participant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.participant-btn {
+  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.participant-btn:hover {
+  border-color: var(--accent);
+  background: var(--bg-main);
+}
+
+.participant-btn.active {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(107, 203, 119, 0.15), rgba(107, 203, 119, 0.1));
+  box-shadow: 0 2px 8px rgba(107, 203, 119, 0.2);
+}
+
+.participant-icon {
+  font-size: 24px;
+}
+
+.participant-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.participant-btn.active .participant-name {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* 게스트 추가 폼 */
+.guest-form {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.guest-form input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.guest-form input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.btn-add-guest {
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-guest:hover {
+  background: #5ab36a;
+  transform: translateY(-1px);
+}
+
+/* 게스트 목록 */
+.guest-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.guest-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(255, 217, 61, 0.1));
+  border: 2px solid rgba(255, 217, 61, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.guest-icon {
+  font-size: 16px;
+}
+
+.guest-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.btn-remove-guest {
+  padding: 2px;
+  color: var(--text-secondary);
+  background: none;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-guest:hover {
+  color: var(--primary);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* 선택 요약 */
+.selected-summary {
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(107, 203, 119, 0.1), rgba(107, 203, 119, 0.05));
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--accent);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summary-count {
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.summary-names {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .participant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .participant-icon {
+    font-size: 20px;
+  }
+
+  .participant-name {
+    font-size: 12px;
+  }
+}
