@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../utils/auth';
 import { getGroup } from '../utils/groups';
-import { ArrowLeft, Settings, Users, Plus } from 'lucide-react';
+import { ArrowLeft, Settings, Users, Store } from 'lucide-react';
 import Calendar from '../components/Calendar';
 import { formatDateKey } from '../utils/calendar';
 import './GroupDetail.css';
@@ -41,7 +41,6 @@ export default function GroupDetail() {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     const dateKey = formatDateKey(date);
-    // 날짜별 상세 페이지로 이동 (4단계에서 구현)
     navigate(`/group/${groupId}/date/${dateKey}`);
   };
 
@@ -55,8 +54,6 @@ export default function GroupDetail() {
       </div>
     );
   }
-
-  const isCreator = group.creatorId === user.uid;
 
   return (
     <div className="group-detail-container">
@@ -101,10 +98,10 @@ export default function GroupDetail() {
             <p>캘린더에서 날짜를 클릭하면 해당 날짜의 식사 기록을 볼 수 있어요</p>
           </div>
 
-          <div className="info-card">
-            <div className="info-icon">🍱</div>
-            <h3>4단계 준비 중</h3>
-            <p>음식점 등록 및 식사 기록 기능이 추가될 예정입니다!</p>
+          <div className="info-card" onClick={() => navigate(`/group/${groupId}/settings`)}>
+            <div className="info-icon">🍽️</div>
+            <h3>음식점 관리</h3>
+            <p>설정에서 자주 가는 음식점을 등록하고 관리할 수 있어요</p>
           </div>
         </div>
 
@@ -112,10 +109,10 @@ export default function GroupDetail() {
         <div className="quick-actions">
           <button 
             className="action-card"
-            onClick={() => alert('4단계에서 구현됩니다!')}
+            onClick={() => navigate(`/group/${groupId}/settings`)}
           >
-            <Plus size={24} />
-            <span>식사 기록 추가</span>
+            <Store size={24} />
+            <span>음식점 관리</span>
           </button>
         </div>
       </div>
