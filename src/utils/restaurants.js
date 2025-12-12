@@ -13,31 +13,17 @@ import {
 import { db } from '../config/firebase';
 
 /**
- * 음식점 카테고리
- */
-export const RESTAURANT_CATEGORIES = {
-  KOREAN: '한식',
-  JAPANESE: '일식',
-  CHINESE: '중식',
-  WESTERN: '양식',
-  SNACK: '분식',
-  DESSERT: '간식',
-  CAFE: '카페',
-  OTHER: '기타'
-};
-
-/**
  * 음식점 등록
  */
 export const createRestaurant = async (groupId, userId, restaurantData) => {
   try {
-    const { name, category, isFavorite = false } = restaurantData;
+    const { name, category, address = '', phone = '', memo = '', isFavorite = false } = restaurantData;
 
     if (!name || !name.trim()) {
       throw new Error('음식점 이름을 입력해주세요.');
     }
 
-    if (!category || !Object.values(RESTAURANT_CATEGORIES).includes(category)) {
+    if (!category) {
       throw new Error('카테고리를 선택해주세요.');
     }
 
@@ -50,6 +36,9 @@ export const createRestaurant = async (groupId, userId, restaurantData) => {
       groupId,
       name: name.trim(),
       category,
+      address: address.trim(),
+      phone: phone.trim(),
+      memo: memo.trim(),
       isFavorite,
       createdBy: userId,
       createdAt: new Date().toISOString(),
@@ -66,14 +55,14 @@ export const createRestaurant = async (groupId, userId, restaurantData) => {
 };
 
 /**
- * 그룹의 음식점 목록 가져오기
+ * 그룹의 음식점 목록 조회
  */
 export const getGroupRestaurants = async (groupId) => {
   try {
     const q = query(
       collection(db, 'restaurants'),
       where('groupId', '==', groupId),
-      orderBy('updatedAt', 'desc')
+      orderBy('createdAt', 'desc')
     );
 
     const querySnapshot = await getDocs(q);
@@ -85,13 +74,13 @@ export const getGroupRestaurants = async (groupId) => {
 
     return { success: true, restaurants };
   } catch (error) {
-    console.error('음식점 목록 조회 오류:', error);
+    console.error('음식점 조회 오류:', error);
     return { success: false, error: error.message };
   }
 };
 
 /**
- * 음식점 정보 가져오기
+ * 음식점 상세 조회
  */
 export const getRestaurant = async (restaurantId) => {
   try {
@@ -113,7 +102,7 @@ export const getRestaurant = async (restaurantId) => {
  */
 export const updateRestaurant = async (restaurantId, updates) => {
   try {
-    const { name, category, isFavorite } = updates;
+    const { name, category, address, phone, memo, isFavorite } = updates;
 
     const updateData = {
       updatedAt: new Date().toISOString()
@@ -127,10 +116,19 @@ export const updateRestaurant = async (restaurantId, updates) => {
     }
 
     if (category !== undefined) {
-      if (!Object.values(RESTAURANT_CATEGORIES).includes(category)) {
-        throw new Error('올바른 카테고리를 선택해주세요.');
-      }
       updateData.category = category;
+    }
+
+    if (address !== undefined) {
+      updateData.address = address.trim();
+    }
+
+    if (phone !== undefined) {
+      updateData.phone = phone.trim();
+    }
+
+    if (memo !== undefined) {
+      updateData.memo = memo.trim();
     }
 
     if (isFavorite !== undefined) {
@@ -162,12 +160,13 @@ export const deleteRestaurant = async (restaurantId) => {
 /**
  * 즐겨찾기 토글
  */
-export const toggleFavorite = async (restaurantId, currentFavorite) => {
+export const toggleFavorite = async (restaurantId, currentValue) => {
   try {
     await updateDoc(doc(db, 'restaurants', restaurantId), {
-      isFavorite: !currentFavorite,
+      isFavorite: !currentValue,
       updatedAt: new Date().toISOString()
     });
+
     return { success: true };
   } catch (error) {
     console.error('즐겨찾기 토글 오류:', error);
@@ -176,35 +175,32 @@ export const toggleFavorite = async (restaurantId, currentFavorite) => {
 };
 
 /**
- * 카테고리별 필터링
+ * 카테고리 아이콘 가져오기
  */
-export const filterByCategory = (restaurants, category) => {
-  if (!category || category === 'all') {
-    return restaurants;
-  }
-  return restaurants.filter(r => r.category === category);
+export const getCategoryIcon = (category) => {
+  const icons = {
+    '한식': '🍚',
+    '일식': '🍱',
+    '중식': '🥟',
+    '양식': '🍝',
+    '분식': '🍜',
+    '간식': '🍰',
+    '카페': '☕',
+    '기타': '🍴'
+  };
+  return icons[category] || '🍴';
 };
 
 /**
- * 즐겨찾기 필터링
+ * 카테고리 목록
  */
-export const filterByFavorite = (restaurants, showOnlyFavorites) => {
-  if (!showOnlyFavorites) {
-    return restaurants;
-  }
-  return restaurants.filter(r => r.isFavorite);
-};
-
-/**
- * 검색
- */
-export const searchRestaurants = (restaurants, searchTerm) => {
-  if (!searchTerm || !searchTerm.trim()) {
-    return restaurants;
-  }
-  
-  const term = searchTerm.toLowerCase();
-  return restaurants.filter(r => 
-    r.name.toLowerCase().includes(term)
-  );
-};
+export const CATEGORIES = [
+  '한식',
+  '일식',
+  '중식',
+  '양식',
+  '분식',
+  '간식',
+  '카페',
+  '기타'
+];
