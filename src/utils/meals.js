@@ -10,9 +10,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-/**
- * 식사 기록 생성
- */
 export const createMeal = async (groupId, userId, dateKey, mealData) => {
   try {
     const { restaurantId, restaurantName, restaurantCategory, items, memo = '' } = mealData;
@@ -25,11 +22,9 @@ export const createMeal = async (groupId, userId, dateKey, mealData) => {
       throw new Error('음식을 추가해주세요.');
     }
 
-    // 새 식사 기록 ID 생성
     const mealRef = doc(collection(db, 'meals'));
     const mealId = mealRef.id;
 
-    // items 데이터 검증 및 정리
     const validatedItems = items.map(item => {
       if (item.type === 'individual') {
         return {
@@ -76,9 +71,6 @@ export const createMeal = async (groupId, userId, dateKey, mealData) => {
   }
 };
 
-/**
- * 특정 날짜의 식사 기록 조회
- */
 export const getDateMeals = async (groupId, dateKey) => {
   try {
     const q = query(
@@ -98,13 +90,10 @@ export const getDateMeals = async (groupId, dateKey) => {
     return { success: true, meals };
   } catch (error) {
     console.error('식사 기록 조회 오류:', error);
-    return { success: false, error: error.message, meals: [] }; // 안전하게 빈 배열 반환
+    return { success: false, error: error.message, meals: [] };
   }
 };
 
-/**
- * 그룹의 모든 식사 기록 조회
- */
 export const getGroupMeals = async (groupId) => {
   try {
     const q = query(
@@ -124,13 +113,10 @@ export const getGroupMeals = async (groupId) => {
     return { success: true, meals };
   } catch (error) {
     console.error('식사 기록 조회 오류:', error);
-    return { success: false, error: error.message, meals: [] }; // 안전하게 빈 배열 반환
+    return { success: false, error: error.message, meals: [] };
   }
 };
 
-/**
- * 식사 기록 삭제
- */
 export const deleteMeal = async (mealId) => {
   try {
     await deleteDoc(doc(db, 'meals', mealId));
@@ -141,9 +127,6 @@ export const deleteMeal = async (mealId) => {
   }
 };
 
-/**
- * 모임원별 정산 계산
- */
 export const calculateMemberSettlement = (meals, memberId) => {
   let totalAmount = 0;
 
@@ -162,13 +145,9 @@ export const calculateMemberSettlement = (meals, memberId) => {
   return totalAmount;
 };
 
-/**
- * 전체 그룹 정산 계산
- */
 export const calculateGroupSettlement = (meals, members) => {
   const settlement = {};
 
-  // 초기화
   members.forEach(member => {
     settlement[member.id] = {
       memberId: member.id,
@@ -177,7 +156,6 @@ export const calculateGroupSettlement = (meals, members) => {
     };
   });
 
-  // 계산
   meals.forEach(meal => {
     if (!meal.items || !Array.isArray(meal.items)) return;
 
