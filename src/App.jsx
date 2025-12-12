@@ -1,85 +1,37 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './config/firebase';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Groups from './pages/Groups';
-import GroupDetail from './pages/GroupDetail';
+import GroupLayout from './pages/GroupLayout';
+import GroupMain from './pages/GroupMain';
 import DateDetail from './pages/DateDetail';
-import GroupSettings from './pages/GroupSettings';
-import './styles/global.css';
+import GroupRestaurants from './pages/GroupRestaurants';
+import GroupMembers from './pages/GroupMembers';
+import GroupStats from './pages/GroupStats';
+import GroupRoulette from './pages/GroupRoulette';
+import GroupSettingsPage from './pages/GroupSettingsPage';
+import { getCurrentUser } from './utils/auth';
 
-// 인증된 사용자만 접근 가능한 라우트
+// Protected Route Component
 function ProtectedRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        fontSize: '24px'
-      }}>
-        🍱 로딩 중...
-      </div>
-    );
-  }
-
-  return user ? children : <Navigate to="/login" />;
+  const user = getCurrentUser();
+  return user ? children : <Navigate to="/login" replace />;
 }
 
-// 비인증 사용자만 접근 가능한 라우트 (로그인, 회원가입)
+// Public Route Component (redirect if logged in)
 function PublicRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        fontSize: '24px'
-      }}>
-        🍱 로딩 중...
-      </div>
-    );
-  }
-
-  return user ? <Navigate to="/groups" /> : children;
+  const user = getCurrentUser();
+  return !user ? children : <Navigate to="/groups" replace />;
 }
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 루트 경로 */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Redirect root to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* 인증 관련 라우트 */}
+        {/* Public Routes */}
         <Route 
           path="/login" 
           element={
@@ -97,7 +49,7 @@ function App() {
           } 
         />
 
-        {/* 보호된 라우트 */}
+        {/* Protected Routes */}
         <Route 
           path="/groups" 
           element={
@@ -106,36 +58,28 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+        {/* Group Routes with Layout */}
         <Route 
           path="/group/:groupId" 
           element={
             <ProtectedRoute>
-              <GroupDetail />
+              <GroupLayout />
             </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/group/:groupId/date/:dateKey" 
-          element={
-            <ProtectedRoute>
-              <DateDetail />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/group/:groupId/settings" 
-          element={
-            <ProtectedRoute>
-              <GroupSettings />
-            </ProtectedRoute>
-          } 
-        />
-
-        {/* 404 페이지 */}
-        <Route path="*" element={<Navigate to="/login" />} />
+          }
+        >
+          {/* Main tabs */}
+          <Route index element={<GroupMain />} />
+          <Route path="restaurants" element={<GroupRestaurants />} />
+          <Route path="members" element={<GroupMembers />} />
+          <Route path="stats" element={<GroupStats />} />
+          <Route path="roulette" element={<GroupRoulette />} />
+          <Route path="settings" element={<GroupSettingsPage />} />
+          
+          {/* Date detail (from calendar) */}
+          <Route path="date/:dateKey" element={<DateDetail />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
