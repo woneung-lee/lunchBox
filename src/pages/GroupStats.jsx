@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
 import { BarChart3 } from 'lucide-react';
-import './GroupStats.css';
+import './GroupCommon.css';
 
 export default function GroupStats() {
   const { group } = useOutletContext();
